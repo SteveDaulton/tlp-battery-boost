@@ -6,6 +6,7 @@
 <p align="center">
   <img src="BatteryBoost.png" alt="Battery Boost Screenshot">
 </p>
+
 _A lightweight Tkinter GUI to toggle TLP between normal battery optimization mode and temporary full-charge mode ( tlp fullcharge )._
 
 ## Overview
