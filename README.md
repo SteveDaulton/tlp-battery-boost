@@ -1,6 +1,6 @@
 # Battery Boost
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)]([LICENSE](https://github.com/SteveDaulton/tlp-battery-boost/blob/main/LICENSE))
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/SteveDaulton/tlp-battery-boost/blob/main/LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
 
 A lightweight Tkinter GUI to toggle TLP between normal battery optimization mode and temporary full-charge mode ( tlp fullcharge ).
