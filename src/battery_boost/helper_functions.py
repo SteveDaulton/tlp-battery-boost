@@ -1,6 +1,6 @@
 """Miscellaneous helper functions for battery boost."""
 import argparse
-import importlib
+from importlib.metadata import version
 import shutil
 from collections import defaultdict
 from tkinter import messagebox
@@ -41,10 +41,9 @@ def parse_args(argv: list[str]) -> Config:
         # Automatically add defaults to help text.
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    version = importlib.metadata.version("tlp-battery-boost")
     parser.add_argument('-v', '--version',
                         action='version',
-                        version=f"Battery Boost {version}")
+                        version=f"Battery Boost {version("tlp-battery-boost")}")
 
     parser.add_argument(
         '-f', '--font-size',
