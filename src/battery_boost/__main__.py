@@ -7,6 +7,7 @@ refreshing sudo authentication periodically to avoid repeated prompts.
 """
 
 import argparse
+import importlib.metadata
 import shutil
 import subprocess
 import sys
@@ -473,25 +474,28 @@ Config: TypeAlias = tuple[ThemeKeys, tuple[str, int], tuple[str, int], float]
 def parse_args(argv: list[str]) -> Config:
     """Return tuple (theme_dict, font_normal, font_small)"""
     parser = argparse.ArgumentParser(
-        description="A simple GUI to enable `tlp fullcharge`.")
+        description="A simple GUI to enable `tlp fullcharge`.",
+        # Automatically add defaults to help text.
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
+    version = importlib.metadata.version("tlp-battery-boost")
     parser.add_argument('-v', '--version',
                         action='version',
-                        version='Battery Boost 1.0.0')
+                        version=f"Battery Boost {version}")
 
     parser.add_argument(
         '-f', '--font-size',
         type=int,
         choices=range(1, 6),
         default=3,
-        help="Font size [1-5] (1=smallest, 5=largest) default=3"
-    )
+        metavar="{1-5}",
+        help="Font size [1-5] (1=smallest, 5=largest)")
+
     parser.add_argument(
         '-t', '--theme',
         choices=['light', 'dark'],
         default='light',
-        help="Color theme (default: light)",
-    )
+        help="Color theme",)
 
     parsed_args = parser.parse_args(argv)
     standard_font, small_font, scale_factor = FONT_SIZES[parsed_args.font_size]

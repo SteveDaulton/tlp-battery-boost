@@ -1,0 +1,51 @@
+[project]
+name = "tlp-battery-boost"
+version = "1.0.0"
+description = "A lightweight Tkinter GUI to toggle TLP between normal and full-charge battery modes."
+authors = [
+    {name = "Steve Daulton", email =  "SteveDaulton@users.noreply.github.com"}
+]
+license = {text = "GPL-3.0"}
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: GTK",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Desktop Environment",
+    "Topic :: System :: Power (Battery)"
+]
+
+[project.urls]
+homepage = "https://github.com/SteveDaulton/tlp-battery-boost"
+repository = "https://github.com/SteveDaulton/tlp-battery-boost"
+
+# [project.gui-scripts] broken in Poetry 2.2 (#10481)
+# use [project.scripts] instead - It's the same on Linux.
+[project.scripts]
+battery_boost = "battery_boost.__main__:main"
+
+[tool.poetry]
+packages = [
+    { include = "battery_boost", from = "src" }
+]
+
+[dependency-groups]
+dev = [
+    "pylint",
+    "flake8 (>=7.3.0,<8.0.0)",
+    "mypy (>=1.18.2,<2.0.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
