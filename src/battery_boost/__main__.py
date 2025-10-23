@@ -6,26 +6,27 @@ Allows toggling between normal and full-charge battery profiles,
 refreshing sudo authentication periodically to avoid repeated prompts.
 """
 
-import argparse
-import importlib.metadata
-import shutil
 import subprocess
 import sys
-import tkinter as tk
-
 from collections import defaultdict
+from typing import Callable, NoReturn
+
+import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog, messagebox
-from typing import Callable, NoReturn, TypeAlias
 
-from battery_boost.constants import (REFRESH_INTERVAL_MS,
-                                     THEME,
-                                     ThemeName,
-                                     ThemeKeys,
-                                     DEFAULT_THEME,
-                                     FONT_SIZES,
-                                     BatteryState,
-                                     STATES)
+from battery_boost.constants import (
+    REFRESH_INTERVAL_MS,
+    ThemeKeys,
+    DEFAULT_THEME,
+    BatteryState,
+    STATES,
+)
+from battery_boost.helper_functions import (
+    check_tlp_installed,
+    format_battery_str,
+    parse_args,
+)
 
 
 class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
@@ -53,7 +54,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.protocol('WM_DELETE_WINDOW', self.quit_app)
 
         # Fail early if TLP not available.
-        if not self.check_tlp_installed():
+        if not check_tlp_installed():
             self.quit_on_error("TLP not found")
 
         # Acquire root for commands.
@@ -139,19 +140,6 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.write_stats(STATES[BatteryState.DEFAULT]['action'])
         self.apply_state()
         self.refresh_authentication()
-
-    @staticmethod
-    def check_tlp_installed() -> bool:
-        """Verify TLP is available.
-
-        Returns:
-            bool: True if TLP is installed; False otherwise. Displays an error
-            dialog if not found.
-        """
-        if not shutil.which('tlp'):
-            messagebox.showerror("Error", "TLP is not installed or not in PATH.")
-            return False
-        return True
 
     def authenticate(self) -> None:
         """Prompt user for sudo password and validate.
@@ -331,7 +319,8 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         # noinspection PyTypeChecker
         self.text_box.config(state=tk.DISABLED)
 
-    def get_tlp_stats(self) -> str:
+    @staticmethod
+    def get_tlp_stats() -> str:
         """Return formatted TLP battery stats or an error message.
 
         Executes `sudo tlp-stat -b` and parses the output into a readable
@@ -363,7 +352,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
             if line.startswith('+++ ') and 'Battery Status:' in line:
                 # Save previous battery (if any)
                 if current_battery:
-                    stats.append(self.format_battery(current_battery, battery_info))
+                    stats.append(format_battery_str(current_battery, battery_info))
 
                 # Start new one
                 current_battery = line.split('Battery Status:')[1].strip()
@@ -386,52 +375,9 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
 
         # Don’t forget the last battery
         if current_battery and battery_info:
-            stats.append(self.format_battery(current_battery, battery_info))
+            stats.append(format_battery_str(current_battery, battery_info))
 
         return '\n'.join(stats) if stats else "No battery data found."
-
-    @staticmethod
-    def format_battery(name: str, info: defaultdict[str, str]) -> str:
-        """Return parsed battery data as a human-readable block of text."""
-        return (f"{name}:\n"
-                f"  Start threshold: {info['start']}%\n"
-                f"  End threshold: {info['end']}%\n"
-                f"  Current Charge: {info['charge']}% "
-                f"of {info['capacity']}%\n")
-
-
-Config: TypeAlias = tuple[ThemeKeys, tuple[str, int], tuple[str, int], float]
-
-
-def parse_args(argv: list[str]) -> Config:
-    """Return tuple (theme_dict, font_normal, font_small)"""
-    parser = argparse.ArgumentParser(
-        description="A simple GUI to enable `tlp fullcharge`.",
-        # Automatically add defaults to help text.
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
-    version = importlib.metadata.version("tlp-battery-boost")
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=f"Battery Boost {version}")
-
-    parser.add_argument(
-        '-f', '--font-size',
-        type=int,
-        choices=range(1, 6),
-        default=3,
-        metavar="{1-5}",
-        help="Font size [1-5] (1=smallest, 5=largest)")
-
-    parser.add_argument(
-        '-t', '--theme',
-        choices=['light', 'dark'],
-        default='light',
-        help="Color theme",)
-
-    parsed_args = parser.parse_args(argv)
-    standard_font, small_font, scale_factor = FONT_SIZES[parsed_args.font_size]
-    return THEME[ThemeName(parsed_args.theme)], standard_font, small_font, scale_factor
 
 
 def main() -> None:
