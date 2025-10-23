@@ -4,7 +4,7 @@ from typing import TypedDict
 
 
 # 10 min interval between re-validating sudo password
-REFRESH_INTERVAL_MS = 600_000
+REFRESH_INTERVAL_MS: int = 600_000
 
 
 # UI Themes

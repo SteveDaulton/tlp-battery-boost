@@ -123,10 +123,12 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                                 bg=self.theme['background'],
                                 foreground=self.theme['text'],
                                 font=self.small_font)
+        # noinspection PyTypeChecker
         self.text_box.pack(padx=int(10 * self.scale_factor),
                            pady=int(10 * self.scale_factor),
                            expand=True,
                            fill=tk.BOTH)
+        # noinspection PyTypeChecker
         self.text_box.config(state=tk.DISABLED)
 
         # Show main window.
@@ -176,6 +178,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                                text=True,
                                capture_output=True,
                                check=True)
+                # noinspection PyUnusedLocal
                 password = None  # Overwrite immediately.
                 return
 
@@ -197,6 +200,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                 self.quit_on_error(f"Unexpected Error {exc}")
 
             finally:
+                # noinspection PyUnusedLocal
                 password = None  # Ensure always cleared.
 
         # Failed every attempt.
@@ -229,6 +233,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         except (subprocess.CalledProcessError, OSError) as exc:
             self.quit_app(f"Authentication failure: {exc}")
 
+        # noinspection PyTypeChecker
         self._refresh_job = self.after(REFRESH_INTERVAL_MS, self.refresh_authentication)
 
     def quit_on_error(self, error_message: str, title: str = "Error") -> NoReturn:
@@ -319,9 +324,11 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         stats = f"{action}{self.get_tlp_stats()}"
         print(stats)  # echo to terminal
 
+        # noinspection PyTypeChecker
         self.text_box.config(state=tk.NORMAL)
         self.text_box.delete('1.0', tk.END)
         self.text_box.insert(tk.END, stats)
+        # noinspection PyTypeChecker
         self.text_box.config(state=tk.DISABLED)
 
     def get_tlp_stats(self) -> str:
@@ -430,6 +437,7 @@ def parse_args(argv: list[str]) -> Config:
 def main() -> None:
     """Configure and launch app."""
     theme_choice, font_normal, font_small, factor = parse_args(sys.argv[1:])
+    app = None
     try:
         app = App(theme_choice, font_normal, font_small, factor)
         app.mainloop()
