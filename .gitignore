@@ -56,17 +56,17 @@ cover/
 *.pot
 
 # Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+# *.log
+# local_settings.py
+# db.sqlite3
+# db.sqlite3-journal
 
 # Flask stuff:
-instance/
-.webassets-cache
+#instance/
+#.webassets-cache
 
 # Scrapy stuff:
-.scrapy
+#.scrapy
 
 # Sphinx documentation
 docs/_build/
@@ -76,7 +76,7 @@ docs/_build/
 target/
 
 # Jupyter Notebook
-.ipynb_checkpoints
+#.ipynb_checkpoints
 
 # IPython
 profile_default/
@@ -128,11 +128,11 @@ ipython_config.py
 __pypackages__/
 
 # Celery stuff
-celerybeat-schedule
-celerybeat.pid
+#celerybeat-schedule
+#celerybeat.pid
 
 # SageMath parsed files
-*.sage.py
+#*.sage.py
 
 # Environments
 .env
@@ -149,7 +149,7 @@ venv.bak/
 .spyproject
 
 # Rope project settings
-.ropeproject
+#.ropeproject
 
 # mkdocs documentation
 /site
