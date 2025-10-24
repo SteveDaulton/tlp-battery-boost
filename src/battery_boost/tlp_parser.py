@@ -89,5 +89,9 @@ def _get_battery_value(line_text: str) -> str:
     parts = line_text.split('=', 1)
     if len(parts) != 2:
         return UNKNOWN
-    value = parts[1].strip().split()[0]
-    return value
+    token = parts[1].strip().split()[0]
+    try:
+        float(token)
+    except ValueError:
+        return UNKNOWN
+    return token
