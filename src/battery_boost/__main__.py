@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""
-Battery Manager GUI using TLP.
+"""Entry point for the Battery Boost application.
 
-Allows toggling between normal and full-charge battery profiles,
-refreshing sudo authentication periodically to avoid repeated prompts.
+Initialises and launches the Tkinter GUI for managing TLP battery charge profiles.
+Battery Boost allows users to toggle between normal optimization and full-charge modes,
+with battery status display.
 """
 
 import subprocess

@@ -1,4 +1,8 @@
-"""Tkinter UI and delegating."""
+"""Tkinter GUI for managing TLP battery charge profiles.
+
+Provides a simple interface to toggle between normal and full-charge modes,
+refresh sudo authentication, and display battery statistics.
+"""
 import subprocess
 import sys
 import tkinter as tk
@@ -14,9 +18,7 @@ from battery_boost.constants import (
     STATES,
     REFRESH_INTERVAL_MS
 )
-from battery_boost.helper_functions import (
-    check_tlp_installed
-)
+from battery_boost.helper_functions import check_tlp_installed
 from battery_boost.tlp_command import (
     initialise_tlp,
     tlp_toggle_state, tlp_get_stats,
@@ -25,11 +27,10 @@ from battery_boost.tlp_parser import parse_tlp_stats
 
 
 class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
-    """Tkinter GUI for controlling laptop battery charge behavior via TLP.
+    """Tkinter GUI for toggling TLP battery charge profiles.
 
-    The app toggles between normal ('default') and full-charge ('recharge')
-    profiles, refreshing `sudo` authentication periodically so the user
-    does not need to re-enter their password during normal use.
+    Supports switching between normal ('default') and full-charge ('recharge') modes
+    and periodically refreshes sudo authentication to avoid repeated password prompts.
     """
     def __init__(self,
                  theme: ThemeKeys = DEFAULT_THEME,
@@ -37,7 +38,14 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                  small_font: tuple[str, int] = ('TkDefaultFont', 9),
                  scale_factor: float = 1.0,
                  ) -> None:
-        """Initialize UI, state, and TLP baseline configuration."""
+        """Initialize the Tkinter UI, state, and baseline TLP configuration.
+
+        Args:
+            theme: Theme colors to apply.
+            standard_font: Font for main UI elements.
+            small_font: Font for secondary UI elements.
+            scale_factor: Scale factor for UI sizing.
+        """
         super().__init__()
 
         self.theme = theme
@@ -137,11 +145,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.refresh_authentication()
 
     def refresh_authentication(self) -> None:
-        """Refresh authentication.
-
-        Validate sudo authentication periodically to keep it active
-        while app is running.
-        """
+        """Periodically refresh sudo authentication to maintain privileges."""
         try:
             subprocess.run(['sudo', '-v'], check=True)
         except (subprocess.CalledProcessError, OSError) as exc:
@@ -156,10 +160,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.quit_app(f"Error: {error_message}")
 
     def quit_app(self, status: int | str = 0) -> NoReturn:
-        """Terminate the application.
-
-        Cancels any scheduled refresh jobs, destroys the Tk root window,
-        and calls `sys.exit`.
+        """Terminate the application, cancel scheduled jobs, and exit.
 
         Args:
             status: Optional exit code or message.
@@ -173,7 +174,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         sys.exit(status)
 
     def apply_state(self) -> None:
-        """Update widgets and text area to display the current UI state."""
+        """Update the UI to reflect the current battery profile state."""
         state = STATES[self.ui_state]
 
         # Colors:
@@ -209,10 +210,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.write_stats(state['action'])
 
     def toggle_state(self) -> None:
-        """Toggle between default and recharge profiles.
-
-        Updates the UI and runs the corresponding TLP command.
-        """
+        """Switch between default and full-charge profiles and update the UI."""
         tlp_toggle_state(self, self.ui_state)
         # Flip UI state
         self.ui_state = (BatteryState.DEFAULT
