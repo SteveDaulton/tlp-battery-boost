@@ -5,7 +5,7 @@ from tkinter import simpledialog, messagebox
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from battery_boost.__main__ import App
+    from battery_boost.app import App
 
 
 def authenticate(parent: App) -> None:
