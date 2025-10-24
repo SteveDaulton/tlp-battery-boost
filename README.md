@@ -25,7 +25,7 @@ Battery Boost provides an easy-to-use interface for switching between normal and
 ## Requirements
 
 - Linux with TLP installed and configured
-- Python 3.9+
+- Python 3.10+
 - sudo privileges for TLP commands
 
 ## Installation
