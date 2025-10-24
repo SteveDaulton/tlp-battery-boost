@@ -13,7 +13,7 @@ from typing import Callable, NoReturn
 
 import tkinter as tk
 from tkinter import ttk
-from tkinter import simpledialog, messagebox
+from tkinter import messagebox
 
 from battery_boost.constants import (
     REFRESH_INTERVAL_MS,
@@ -27,6 +27,7 @@ from battery_boost.helper_functions import (
     format_battery_str,
     parse_args,
 )
+from battery_boost.authenticate import authenticate
 
 
 class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
@@ -59,7 +60,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
 
         # Acquire root for commands.
         self._refresh_job: str | None = None
-        self.authenticate()
+        authenticate(self)
 
         self.ui_state: BatteryState = BatteryState.DEFAULT
 
@@ -140,60 +141,6 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.write_stats(STATES[BatteryState.DEFAULT]['action'])
         self.apply_state()
         self.refresh_authentication()
-
-    def authenticate(self) -> None:
-        """Prompt user for sudo password and validate.
-
-        Runs `sudo -v` to cache credentials for subsequent commands.
-        Retries up to three times before exiting the program.
-
-        Exits program if authentication fails.
-        """
-        max_tries = 3
-        for attempt in range(max_tries):
-            password = simpledialog.askstring(
-                "Authenticate",
-                "Authentication Required to run Battery Boost.\n\nEnter your password:",
-                show="*",
-                parent=self
-                )
-            if not password:
-                self.quit_app("Cancelled.")
-
-            try:
-                subprocess.run(['sudo', '-S', '-v'],
-                               input=password + '\n',
-                               text=True,
-                               capture_output=True,
-                               check=True)
-                # noinspection PyUnusedLocal
-                password = None  # Overwrite immediately.
-                return
-
-            except subprocess.CalledProcessError as exc:
-                if attempt < max_tries - 1:
-                    stderr = exc.stderr or ""
-                    if 'try again' in stderr.lower():
-                        messagebox.showerror("Error", "Incorrect password.")
-                    else:
-                        # Fallback for any other sudo validation error.
-                        messagebox.showerror(
-                            "Error",
-                            f"Authentication failed:\n{stderr.strip() or exc}",
-                            parent=self,
-                            )
-
-            except Exception as exc:  # pylint: disable=broad-exception-caught
-                # Defensively catch any unexpected errors and quit.
-                self.quit_on_error(f"Unexpected Error {exc}")
-
-            finally:
-                # noinspection PyUnusedLocal
-                password = None  # Ensure always cleared.
-
-        # Failed every attempt.
-        message = f"Authentication failed {max_tries} times.\n\nClick OK to Quit."
-        self.quit_on_error(message)
 
     def initialise_tlp(self) -> None:
         """Initialize TLP to default state.
