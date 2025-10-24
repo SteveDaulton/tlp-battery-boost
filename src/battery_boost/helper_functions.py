@@ -2,7 +2,6 @@
 import argparse
 from importlib.metadata import version
 import shutil
-from collections import defaultdict
 from tkinter import messagebox
 from typing import TypeAlias
 
@@ -22,15 +21,6 @@ def check_tlp_installed() -> bool:
     return True
 
 
-def format_battery_str(name: str, info: defaultdict[str, str]) -> str:
-    """Return parsed battery data as a human-readable block of text."""
-    return (f"{name}:\n"
-            f"  Start threshold: {info['start']}%\n"
-            f"  End threshold: {info['end']}%\n"
-            f"  Current Charge: {info['charge']}% "
-            f"of {info['capacity']}%\n")
-
-
 Config: TypeAlias = tuple[ThemeKeys, tuple[str, int], tuple[str, int], float]
 
 
@@ -43,7 +33,7 @@ def parse_args(argv: list[str]) -> Config:
 
     parser.add_argument('-v', '--version',
                         action='version',
-                        version=f"Battery Boost {version("tlp-battery-boost")}")
+                        version=f"Battery Boost {version('tlp-battery-boost')}")
 
     parser.add_argument(
         '-f', '--font-size',

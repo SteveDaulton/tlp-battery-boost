@@ -1,11 +1,10 @@
 """Tkinter UI and delegating."""
 import subprocess
 import sys
-from collections import defaultdict
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from typing import NoReturn, Callable
+from typing import NoReturn
 
 from battery_boost.authenticate import authenticate
 from battery_boost.constants import (
@@ -16,9 +15,13 @@ from battery_boost.constants import (
     REFRESH_INTERVAL_MS
 )
 from battery_boost.helper_functions import (
-    check_tlp_installed,
-    format_battery_str
+    check_tlp_installed
 )
+from battery_boost.tlp_command import (
+    initialise_tlp,
+    tlp_toggle_state, tlp_get_stats,
+)
+from battery_boost.tlp_parser import parse_tlp_stats
 
 
 class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
@@ -128,25 +131,10 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.deiconify()
 
         # Ensure TLP is in a known (default enabled) state.
-        self.initialise_tlp()
+        initialise_tlp(self)
         self.write_stats(STATES[BatteryState.DEFAULT]['action'])
         self.apply_state()
         self.refresh_authentication()
-
-    def initialise_tlp(self) -> None:
-        """Initialize TLP to default state.
-
-        Runs `sudo tlp start` to reset the TLP configuration before use.
-        """
-        try:
-            subprocess.run(['sudo', 'tlp', 'start'], check=True)
-            return
-
-        except Exception as exc:  # pylint: disable=broad-exception-caught
-            messagebox.showerror("Unexpected Error",
-                                 f"Could not initialize TLP.\n{exc}",
-                                 parent=self)
-            self.quit_app(f"Error: Could not initialize TLP: {exc}")
 
     def refresh_authentication(self) -> None:
         """Refresh authentication.
@@ -225,94 +213,21 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
 
         Updates the UI and runs the corresponding TLP command.
         """
-        # Flip state
-        if self.ui_state == BatteryState.RECHARGE:
-            self.ui_state = BatteryState.DEFAULT
-            command = ['sudo', 'tlp', 'start']
-        else:
-            self.ui_state = BatteryState.RECHARGE
-            command = ['sudo', 'tlp', 'fullcharge']
-
-        try:
-            subprocess.run(command, check=True)
-        except subprocess.CalledProcessError as exc:
-            self.quit_on_error(f"TLP command failed: {exc.returncode}:\n"
-                               f"{exc.stderr or exc}")
-        except FileNotFoundError as exc:
-            self.quit_on_error(f"Command not found: {exc.filename}")
-        except OSError as exc:
-            self.quit_on_error(f"System error while running TLP command: {exc}")
-
+        tlp_toggle_state(self, self.ui_state)
+        # Flip UI state
+        self.ui_state = (BatteryState.DEFAULT
+                         if self.ui_state == BatteryState.RECHARGE
+                         else BatteryState.RECHARGE)
         self.apply_state()
 
     def write_stats(self, action: str = "") -> None:
         """Update the text area with the current TLP battery stats."""
-        stats = f"{action}{self.get_tlp_stats()}"
+        raw_stats = tlp_get_stats()
+        stats = f"{action}{parse_tlp_stats(raw_stats)}"
         print(stats)  # echo to terminal
-
         # noinspection PyTypeChecker
         self.text_box.config(state=tk.NORMAL)
         self.text_box.delete('1.0', tk.END)
         self.text_box.insert(tk.END, stats)
         # noinspection PyTypeChecker
         self.text_box.config(state=tk.DISABLED)
-
-    @staticmethod
-    def get_tlp_stats() -> str:
-        """Return formatted TLP battery stats or an error message.
-
-        Executes `sudo tlp-stat -b` and parses the output into a readable
-        format showing charge thresholds and capacities.
-
-        Returns:
-            str: Human-readable summary of battery stats or an error message.
-        """
-        try:
-            result = subprocess.run(['sudo', 'tlp-stat', '-b'],
-                                    text=True,
-                                    capture_output=True,
-                                    check=True)
-        except subprocess.CalledProcessError as exc:
-            return f"Failed to run tlp-stat:\n{exc.stderr or exc}"
-        except OSError as exc:
-            return f"System error while running tlp-stat: {exc}"
-        except Exception as exc:  # pylint: disable=broad-exception-caught
-            return f"Unexpected error: {exc}"
-
-        lines = result.stdout.splitlines()
-        stats = []
-        current_battery = ""
-        battery_info: defaultdict[str, str] = defaultdict(lambda: "???")
-
-        for line in lines:
-            line = line.strip()
-            # Detect start of a new battery section
-            if line.startswith('+++ ') and 'Battery Status:' in line:
-                # Save previous battery (if any)
-                if current_battery:
-                    stats.append(format_battery_str(current_battery, battery_info))
-
-                # Start new one
-                current_battery = line.split('Battery Status:')[1].strip()
-                battery_info = defaultdict(lambda: "???")
-                continue
-
-            # Parse values.
-            # Using Python string methods rather than regex for maintainability.
-            get_value: Callable[[str], str] = (
-                lambda full_line: full_line.split('=', 1)[1].strip().split()[0])
-
-            if 'charge_control_start_threshold' in line:
-                battery_info['start'] = get_value(line)
-            elif 'charge_control_end_threshold' in line:
-                battery_info['end'] = get_value(line)
-            elif line.startswith('Charge'):
-                battery_info['charge'] = get_value(line)
-            elif line.startswith('Capacity'):
-                battery_info['capacity'] = get_value(line)
-
-        # Don’t forget the last battery
-        if current_battery and battery_info:
-            stats.append(format_battery_str(current_battery, battery_info))
-
-        return '\n'.join(stats) if stats else "No battery data found."
