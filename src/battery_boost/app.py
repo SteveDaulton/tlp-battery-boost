@@ -3,6 +3,7 @@
 Provides a simple interface to toggle between normal and full-charge modes,
 refresh sudo authentication, and display battery statistics.
 """
+
 import subprocess
 import sys
 import tkinter as tk

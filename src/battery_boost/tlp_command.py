@@ -1,8 +1,9 @@
-"""UI-aware wrappers for executing TLP system commands.
+"""Wrappers for executing TLP system commands in a Tkinter context.
 
-Provides functions to initialize, toggle, and query TLP via `sudo` calls,
-with error handling appropriate to the Tkinter application context.
+Provides functions to initialize, toggle, and query TLP using sudo,
+with error handling suitable for a GUI application.
 """
+
 from __future__ import annotations
 
 import subprocess
@@ -16,9 +17,10 @@ if TYPE_CHECKING:
 
 
 def initialise_tlp(_parent: App) -> None:
-    """Initialize TLP to default state.
+    """Initialize TLP to the default state.
 
-    Runs `sudo tlp start` to reset the TLP configuration before use.
+    Runs `sudo tlp start` to reset configuration. Shows an error dialog and exits
+    if the command fails.
     """
     try:
         subprocess.run(['sudo', 'tlp', 'start'], check=True)
@@ -32,7 +34,12 @@ def initialise_tlp(_parent: App) -> None:
 
 
 def tlp_toggle_state(_parent: App, current_state: BatteryState) -> None:
-    """Toggle TLP between default and recharge profiles."""
+    """Toggle TLP between default and full-charge profiles.
+
+    Args:
+        _parent: The Tkinter app instance, used for error dialogs.
+        current_state: The current battery profile.
+    """
     try:
         if current_state == BatteryState.DEFAULT:
             subprocess.run(['sudo', 'tlp', 'fullcharge'], check=True)
@@ -48,7 +55,11 @@ def tlp_toggle_state(_parent: App, current_state: BatteryState) -> None:
 
 
 def tlp_get_stats() -> str:
-    """Return TLP stats from `sudo tlp-stat -b`."""
+    """Retrieve TLP battery statistics.
+
+    Runs `sudo tlp-stat -b` and returns stdout. Returns an error message string
+    if the command fails.
+    """
     try:
         result = subprocess.run(['sudo', 'tlp-stat', '-b'],
                                 text=True,

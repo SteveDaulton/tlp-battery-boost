@@ -1,4 +1,9 @@
-"""Authenticate for sudo commands."""
+"""Prompt for and validate sudo credentials for Battery Boost.
+
+Provides a GUI dialog to request the user's password and cache sudo credentials
+for subsequent TLP commands. Exits the program if authentication fails.
+"""
+
 from __future__ import annotations
 import subprocess
 from tkinter import simpledialog, messagebox

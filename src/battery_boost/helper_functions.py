@@ -1,4 +1,5 @@
-"""Miscellaneous helper functions for battery boost."""
+"""Helper functions for Battery Boost."""
+
 import argparse
 from importlib.metadata import version
 import shutil
@@ -9,11 +10,10 @@ from battery_boost.constants import THEME, ThemeName, FONT_SIZES, ThemeKeys
 
 
 def check_tlp_installed() -> bool:
-    """Verify TLP is available.
+    """Check whether TLP is installed and available in PATH.
 
     Returns:
-        bool: True if TLP is installed; False otherwise. Displays an error
-        dialog if not found.
+        bool: True if TLP is found, False otherwise. Shows an error dialog if not found.
     """
     if not shutil.which('tlp'):
         messagebox.showerror("Error", "TLP is not installed or not in PATH.")
@@ -25,7 +25,14 @@ Config: TypeAlias = tuple[ThemeKeys, tuple[str, int], tuple[str, int], float]
 
 
 def parse_args(argv: list[str]) -> Config:
-    """Return tuple (theme_dict, font_normal, font_small)"""
+    """Parse command-line arguments and return configuration.
+
+    Args:
+        argv: List of command-line arguments.
+
+    Returns:
+        tuple: (theme_dict, standard_font, small_font, scale_factor).
+    """
     parser = argparse.ArgumentParser(
         description="A simple GUI to enable `tlp fullcharge`.",
         # Automatically add defaults to help text.

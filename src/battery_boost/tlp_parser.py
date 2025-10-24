@@ -7,13 +7,13 @@ UNKNOWN = "???"
 
 
 def parse_tlp_stats(tlp_stats: str) -> str:
-    """Return formatted TLP battery stats or an error message.
+    """Parse TLP battery stats and return a human-readable summary.
 
-    Parse the output of tlp_get_stats() into a readable
-    format showing charge thresholds and capacities.
+    Args:
+        tlp_stats: Output string from `tlp_get_stats()`.
 
     Returns:
-        str: Human-readable summary of battery stats or an error message.
+        str: Formatted battery statistics or an error message.
     """
     if tlp_stats.lower().startswith('error'):
         return tlp_stats
@@ -59,9 +59,17 @@ def parse_tlp_stats(tlp_stats: str) -> str:
     return '\n'.join(stats) if stats else "No battery data found."
 
 
-def _format_battery_str(name: str, info: defaultdict[str, str]) -> str:
-    """Return parsed battery data as a human-readable block of text."""
-    return (f"{name}:\n"
+def _format_battery_str(battery_name: str, info: defaultdict[str, str]) -> str:
+    """Format battery info into a readable text block.
+
+    Args:
+        battery_name: Battery name.
+        info: Dictionary of battery attributes (start, end, charge, capacity).
+
+    Returns:
+        str: Formatted string representing the battery.
+    """
+    return (f"{battery_name}:\n"
             f"  Start threshold: {info['start']}%\n"
             f"  End threshold: {info['end']}%\n"
             f"  Current Charge: {info['charge']}% "
@@ -69,7 +77,15 @@ def _format_battery_str(name: str, info: defaultdict[str, str]) -> str:
 
 
 def _get_battery_value(line_text: str) -> str:
-    """Return numeric value from a 'key = value' line, or ??? if missing."""
+    """Extract the numeric battery value from a TLP output line.
+
+    Args:
+        line_text: A line from `tlp-stat -b` containing a battery property,
+                   e.g. start/end thresholds, charge, or capacity.
+
+    Returns:
+        str: The numeric value as a string (e.g., '70', '83.8'), or '???' if not found.
+    """
     parts = line_text.split('=', 1)
     if len(parts) != 2:
         return UNKNOWN

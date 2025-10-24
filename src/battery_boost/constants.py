@@ -1,4 +1,5 @@
-"""Battery Boost Constants."""
+"""Constants and types for the Battery Boost application."""
+
 from enum import Enum
 from typing import TypedDict
 
@@ -56,8 +57,9 @@ FONT_SIZES = {1: (('TkDefaultFont', 8), ('TkDefaultFont', 7), 0.72),
 
 
 # State definitions
+
 class BatteryState(Enum):
-    """TLP states."""
+    """Battery profiles managed by TLP."""
     DEFAULT = 'default'
     RECHARGE = 'recharge'
 
