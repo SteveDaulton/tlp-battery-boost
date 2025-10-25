@@ -53,7 +53,6 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.standard_font = standard_font
         self.small_font = small_font
         self.scale_factor = scale_factor
-
         self.withdraw()
         self.protocol('WM_DELETE_WINDOW', self.quit_app)
 
@@ -67,74 +66,10 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
 
         self.ui_state: BatteryState = BatteryState.DEFAULT
 
-        self.title('Battery Boost')
-        self.geometry(f'{int(400 * self.scale_factor)}x{int(360 * self.scale_factor)}')
-        self.minsize(int(200 * self.scale_factor), int(150 * self.scale_factor))
-        self.maxsize(int(600 * self.scale_factor), int(600 * self.scale_factor))
-
-        # ttk Style setup
-        self.style = ttk.Style(self)
-        self.style.theme_use('clam')  # 'clam' allows color customizations.
-
-        # Create styles for both states
-        self.style.configure('Default.TButton',
-                             relief='flat',
-                             background=self.theme['button_0'],
-                             foreground=self.theme['text'],
-                             font=self.standard_font)
-        self.style.map('Default.TButton',
-                       background=[('active', self.theme['active_0'])])
-
-        self.style.configure('Recharge.TButton',
-                             relief='flat',
-                             background=self.theme['button_1'],
-                             foreground=self.theme['text'],
-                             font=self.standard_font)
-        self.style.map('Recharge.TButton',
-                       background=[('active', self.theme['active_1'])])
-
-        self.style.configure('Default.TLabel',
-                             background=self.theme['background'],
-                             foreground=self.theme['text'],
-                             font=self.standard_font)
-        self.style.configure('Recharge.TLabel',
-                             background=self.theme['active'],
-                             foreground=self.theme['text'],
-                             font=self.standard_font)
-
-        # Widgets
-
-        self.label = ttk.Label(self,
-                               style='Default.TLabel',
-                               border=int(10 * self.scale_factor))
-        self.label.pack()
-
-        self.button = ttk.Button(self,
-                                 style='Default.TButton',
-                                 command=self.toggle_state)
-        self.button.pack()
-
-        instructions = ("You can close this app after\n"
-                        "selecting the required profile.")
-        self.instruction_label = ttk.Label(self,
-                                           style='Default.TLabel',
-                                           text=instructions,
-                                           justify='center',
-                                           font=self.small_font)
-        self.instruction_label.pack(pady=(int(5 * self.scale_factor),
-                                          int(10 * self.scale_factor)))
-
-        self.text_box = tk.Text(self, height=2,
-                                bg=self.theme['background'],
-                                foreground=self.theme['text'],
-                                font=self.small_font)
-        # noinspection PyTypeChecker
-        self.text_box.pack(padx=int(10 * self.scale_factor),
-                           pady=int(10 * self.scale_factor),
-                           expand=True,
-                           fill=tk.BOTH)
-        # noinspection PyTypeChecker
-        self.text_box.config(state=tk.DISABLED)
+        self._init_window()
+        self._init_styles()
+        self._init_widgets()
+        self._layout_widgets()
 
         # Show main window.
         self.deiconify()
@@ -144,6 +79,77 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.write_stats(STATES[BatteryState.DEFAULT]['action'])
         self.apply_state()
         self.refresh_authentication()
+
+    def _init_window(self) -> None:
+        """Initialize the window."""
+        self.title('Battery Boost')
+        self.geometry(f'{int(400 * self.scale_factor)}x{int(360 * self.scale_factor)}')
+        self.minsize(int(200 * self.scale_factor), int(150 * self.scale_factor))
+        self.maxsize(int(600 * self.scale_factor), int(600 * self.scale_factor))
+
+    def _init_styles(self) -> None:
+        """ttk Style setup"""
+        style = ttk.Style(self)
+        style.theme_use('clam')  # 'clam' allows color customizations.
+
+        # Create styles for both states
+        style.configure('Default.TButton',
+                        relief='flat',
+                        background=self.theme['button_0'],
+                        foreground=self.theme['text'],
+                        font=self.standard_font)
+        style.map('Default.TButton',
+                  background=[('active', self.theme['active_0'])])
+
+        style.configure('Recharge.TButton',
+                        relief='flat',
+                        background=self.theme['button_1'],
+                        foreground=self.theme['text'],
+                        font=self.standard_font)
+        style.map('Recharge.TButton',
+                  background=[('active', self.theme['active_1'])])
+
+        style.configure('Default.TLabel',
+                        background=self.theme['background'],
+                        foreground=self.theme['text'],
+                        font=self.standard_font)
+        style.configure('Recharge.TLabel',
+                        background=self.theme['active'],
+                        foreground=self.theme['text'],
+                        font=self.standard_font)
+        self.style = style
+
+    def _init_widgets(self) -> None:
+        self.label = ttk.Label(self,
+                               style='Default.TLabel',
+                               border=int(10 * self.scale_factor))
+        self.button = ttk.Button(self,
+                                 style='Default.TButton',
+                                 command=self.toggle_state)
+        instructions = ("You can close this app after\n"
+                        "selecting the required profile.")
+        self.instruction_label = ttk.Label(self,
+                                           style='Default.TLabel',
+                                           text=instructions,
+                                           justify='center',
+                                           font=self.small_font)
+        self.text_box = tk.Text(self, height=2,
+                                bg=self.theme['background'],
+                                foreground=self.theme['text'],
+                                font=self.small_font)
+        # noinspection PyTypeChecker
+        self.text_box.config(state=tk.DISABLED)
+
+    def _layout_widgets(self) -> None:
+        self.label.pack()
+        self.button.pack()
+        self.instruction_label.pack(pady=(int(5 * self.scale_factor),
+                                          int(10 * self.scale_factor)))
+        # noinspection PyTypeChecker
+        self.text_box.pack(padx=int(10 * self.scale_factor),
+                           pady=int(10 * self.scale_factor),
+                           expand=True,
+                           fill=tk.BOTH)
 
     def refresh_authentication(self) -> None:
         """Periodically refresh sudo authentication to maintain privileges."""
