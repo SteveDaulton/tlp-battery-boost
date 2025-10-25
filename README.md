@@ -1,7 +1,8 @@
 # Battery Boost
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/SteveDaulton/tlp-battery-boost/blob/main/LICENSE)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![PyPI](https://img.shields.io/pypi/v/tlp-battery-boost.svg)](https://pypi.org/project/tlp-battery-boost/)
 
 <p align="center">
   <img src="BatteryBoost.png" alt="Battery Boost Screenshot">
@@ -26,38 +27,32 @@ Battery Boost provides an easy-to-use interface for switching between normal and
 
 - Linux with TLP installed and configured
 - Python 3.10+
+- Tkinter (python3-tk)
 - sudo privileges for TLP commands
 
 ## Installation
 
-- Ensure TLP is installed on your system:
+**Ensure TLP and Tkinter are installed on your system:**
 
-    ```
-    sudo apt install tlp tlp-rdw  # For Debian/Ubuntu
-    # or
-    sudo dnf install tlp tlp-rdw  # For Fedora
-    ```
+```bash
+sudo apt install tlp tlp-rdw python3-tk  # For Debian/Ubuntu
+# or
+sudo dnf install tlp tlp-rdw python3-tkinter  # For Fedora
+```
 
-- Clone this repository or download the script:
+**Installing with pipx (Recommended)**
 
-    ```
-    git clone https://github.com/SteveDaulton/tlp-battery-boost.git
-    cd tlp-battery-boost
-    ```
-
-- Make the script executable (optional):
-    ```
-    chmod +x battery_boost.py
-    ```
+```bash
+pipx install tlp-battery-boost
+```
 
 ## Usage
 
 To launch the graphical interface:
 
-    ./battery_boost.py
-    # or
-    python3 battery_boost.py
-
+```bash
+battery_boost
+```
 
 The app will:
 
@@ -66,25 +61,53 @@ The app will:
 - Show the current battery status
 - Provide a button to toggle between default and full-charge modes
 
+
 ## Command Line Options
 
-    ./battery_boost.py --help
-        -f, --font-size [1-5]: Set font size (1=smallest, 5=largest, default=3)
-        -t, --theme [light|dark]: Choose color theme (default: light)
-        -v, --version: Show version information
+You can view the full command-line options by running:
+
+```bash
+battery_boost --help
+```
+
+Example output:
+
+```text
+$ battery_boost --help
+usage: battery_boost [-h] [-v] [-f {1-5}] [-t {light,dark}]
+
+A simple GUI to enable `tlp fullcharge`.
+
+options:
+  -h, --help            show this help message and exit
+  -v, --version         show program's version number and exit
+  -f {1-5}, --font-size {1-5}
+                        Font size [1-5] (1=smallest, 5=largest) (default: 3)
+  -t {light,dark}, --theme {light,dark}
+                        Color theme (default: light)
+```
+
+**Notes:**
+
+- `-f` sets the font size (1=smallest, 5=largest; default=3).  
+- `-t` sets the color theme (light or dark; default=light).  
+- `-v` prints the program version.  
+- `-h` shows this help message and exits.
 
 
 ### Examples
 
 **Large font with dark theme**
 
-    ./battery_boost.py -f 5 -t dark
-
+```
+$ battery_boost.py -f 5 -t dark
+```
  
 **Small font for compact displays**
 
-    ./battery_boost.py --font-size 1
-
+```
+$ battery_boost.py --font-size 1
+```
 
 ## How It Works
 
@@ -105,6 +128,11 @@ The app will:
 
 ## Troubleshooting
 
+**Tkinter not available / ImportError: No module named 'tkinter':**
+
+- Make sure Tkinter is installed (see the Installation section above).  
+- On Linux, this usually requires the system package `python3-tk` (Debian/Ubuntu) or `python3-tkinter` (Fedora).
+
 **TLP not found error:**
 
 - Ensure TLP is installed and in your PATH
@@ -118,7 +146,7 @@ The app will:
 **Battery status not showing:**
 
 - Verify your system's battery is detected by TLP
-- Check that sudo tlp-stat -b works from the command line
+- Check that `sudo tlp-stat -b` works from the command line
 
 ## Contributing
 
