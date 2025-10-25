@@ -46,6 +46,14 @@ sudo dnf install tlp tlp-rdw python3-tkinter  # For Fedora
 pipx install tlp-battery-boost
 ```
 
+**Optional Desktop Integration**
+
+If you’d like Battery Boost to appear in your system’s application menu or on your desktop:
+
+- Most Linux desktop environments (such as GNOME, KDE, XFCE) allow you to **add a custom launcher** manually.
+- Set the command to `battery_boost` and (optionally) include options such as `battery_boost -t dark -f 2`.
+
+
 ## Usage
 
 To launch the graphical interface:
@@ -73,7 +81,7 @@ battery_boost --help
 Example output:
 
 ```text
-$ battery_boost --help
+battery_boost --help
 usage: battery_boost [-h] [-v] [-f {1-5}] [-t {light,dark}]
 
 A simple GUI to enable `tlp fullcharge`.
@@ -100,13 +108,13 @@ options:
 **Large font with dark theme**
 
 ```
-$ battery_boost.py -f 5 -t dark
+battery_boost -f 5 -t dark
 ```
  
 **Small font for compact displays**
 
 ```
-$ battery_boost.py --font-size 1
+battery_boost --font-size 1
 ```
 
 ## How It Works
