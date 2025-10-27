@@ -31,7 +31,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
     """Tkinter GUI for toggling TLP battery charge profiles.
 
     Supports switching between normal ('default') and full-charge ('recharge') modes
-    and periodically refreshes sudo authentication to avoid repeated password prompts.
+    and periodically refreshes display of battery statistics.
     """
     def __init__(self,
                  theme: ThemeKeys = DEFAULT_THEME,
@@ -58,7 +58,8 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
 
         # Fail early if TLP not available.
         if not check_tlp_installed():
-            self.quit_on_error("TLP not found")
+            self.quit_on_error("TLP is not installed or not in PATH.",
+                               "Fatal Error")
 
         # Acquire root for commands.
         self._refresh_job: str | None = None
