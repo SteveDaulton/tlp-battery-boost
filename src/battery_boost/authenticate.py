@@ -26,11 +26,19 @@ def authenticate(parent: App) -> None:
         _password = simpledialog.askstring(
             "Authenticate",
             "Authentication Required to run Battery Boost.\n\nEnter your password:",
-            show="*",
-            parent=parent
+            show="*"
         )
-        if not _password:
+
+        if _password is None:
             parent.quit_app("Cancelled.")
+
+        # Don't strip() - whitespaces are unusual but valid password characters.
+        if not _password:
+            if attempt < max_tries - 1:
+                messagebox.showerror("Error", "Password required.")
+                continue
+            else:
+                break
 
         try:
             subprocess.run(['sudo', '-S', '-v'],
@@ -39,23 +47,17 @@ def authenticate(parent: App) -> None:
                            capture_output=True,
                            timeout=20,  # Unlikely, but better than hanging.
                            check=True)
-
-            _password = None  # Overwrite immediately.
+            _password = None  # Overwrite password immediately.
             return
-        except subprocess.CalledProcessError as exc:
+        except FileNotFoundError:
+            parent.quit_on_error("sudo not found on this system.")
+        except subprocess.TimeoutExpired:
+            parent.quit_on_error("Authentication process timed out.",
+                                 "Fatal Error")
+        except subprocess.CalledProcessError:
+            # Only realistic failure remaining is "wrong password".
             if attempt < max_tries - 1:
-                stderr = exc.stderr or ""
-                if 'try again' in stderr.lower():
-                    messagebox.showerror("Error", "Incorrect password.",
-                                         parent=parent)
-                else:
-                    # Fallback for any other sudo validation error.
-                    messagebox.showerror(
-                        "Error",
-                        f"Authentication failed:\n{stderr.strip() or exc}",
-                        parent=parent,
-                    )
-
+                messagebox.showerror("Error", "Incorrect password.")
         except Exception as exc:  # pylint: disable=broad-exception-caught
             # Defensively catch any unexpected errors and quit.
             parent.quit_on_error(f"Unexpected Error {exc}")
