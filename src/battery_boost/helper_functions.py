@@ -3,7 +3,6 @@
 import argparse
 from importlib.metadata import version
 import shutil
-from tkinter import messagebox
 from typing import TypeAlias
 
 from battery_boost.constants import THEME, ThemeName, FONT_SIZES, ThemeKeys
