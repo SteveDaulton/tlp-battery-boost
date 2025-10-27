@@ -5,7 +5,7 @@
 [![PyPI](https://img.shields.io/pypi/v/tlp-battery-boost.svg)](https://pypi.org/project/tlp-battery-boost/)
 
 <p align="center">
-  <img src="BatteryBoost.png" alt="Battery Boost Screenshot">
+  <img src="https://raw.githubusercontent.com/SteveDaulton/tlp-battery-boost/main/BatteryBoost.png" alt="Battery Boost Screenshot">
 </p>
 
 _A lightweight Tkinter GUI to toggle TLP between normal battery optimization mode and temporary full-charge mode ( tlp fullcharge )._
