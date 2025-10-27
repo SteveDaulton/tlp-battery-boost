@@ -10,15 +10,8 @@ from battery_boost.constants import THEME, ThemeName, FONT_SIZES, ThemeKeys
 
 
 def check_tlp_installed() -> bool:
-    """Check whether TLP is installed and available in PATH.
-
-    Returns:
-        bool: True if TLP is found, False otherwise. Shows an error dialog if not found.
-    """
-    if not shutil.which('tlp'):
-        messagebox.showerror("Error", "TLP is not installed or not in PATH.")
-        return False
-    return True
+    """Return True if TLP is installed and available in PATH, else False."""
+    return bool(shutil.which('tlp'))
 
 
 Config: TypeAlias = tuple[ThemeKeys, tuple[str, int], tuple[str, int], float]
