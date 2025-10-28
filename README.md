@@ -4,7 +4,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![PyPI](https://img.shields.io/pypi/v/tlp-battery-boost.svg)](https://pypi.org/project/tlp-battery-boost/)
 
-<p align="center">
+<p style="text-align: center;">
   <img src="https://raw.githubusercontent.com/SteveDaulton/tlp-battery-boost/main/BatteryBoost.png" alt="Battery Boost Screenshot">
 </p>
 
@@ -16,12 +16,12 @@ Battery Boost provides an easy-to-use interface for switching between normal and
 
 ## Features
 
-- Toggle Between Profiles: Switch between default TLP settings and full-charge mode
-- Automatic Authentication: Enter your password once - the app maintains sudo privileges while running
-- Battery Status Display: View current charge levels and threshold settings
-- Theme Support: Choose between light and dark themes
-- Adjustable Font Sizes: Scale the interface to your preference
-- Terminal Integration: When run from terminal, displays status information for debugging
+- **Toggle Between Profiles:** Switch between default TLP settings and full-charge mode.
+- **Automatic Authentication:** Enter your password once - the app maintains sudo privileges while running.
+- **Battery Status Display:** View current charge levels and threshold settings.
+- **Theme Support:** Choose between light and dark themes.
+- **Adjustable Font Sizes:** Scale the interface to your preference.
+- **Terminal Integration:** When run from terminal, displays status information for debugging.
 
 ## Requirements
 
@@ -64,10 +64,10 @@ battery_boost
 
 The app will:
 
-- Prompt for your sudo password
-- Initialize TLP to default settings
-- Show the current battery status
-- Provide a button to toggle between default and full-charge modes
+- Prompt for your sudo password.
+- Initialize TLP to default settings.
+- Show the current battery status.
+- Provide a button to toggle between default and full-charge modes.
 
 
 ## Command Line Options
@@ -119,20 +119,20 @@ battery_boost --font-size 1
 
 ## How It Works
 
-- Default Mode: Uses TLP's standard battery preservation settings (typically 80% charge limit)
-- Full Charge Mode: Temporarily disables charge limits to charge the battery to 100%
-- Authentication: Caches sudo credentials for 10 minutes to avoid repeated password prompts
-- Status Monitoring: Uses `tlp-stat -b` to display current battery thresholds and charge levels
+- **Default Mode:** Uses TLP's standard battery preservation settings (typically 80% charge limit).
+- **Full Charge Mode:** Temporarily disables charge limits to charge the battery to 100%.
+- **Authentication:** Caches sudo credentials to avoid repeated password prompts.
+- **Status Monitoring:** Uses `tlp-stat -b` to display current battery thresholds and charge levels.
 
 > For more information about TLP, see [https://linrunner.de/tlp/](https://linrunner.de/tlp/).
 
 
 ## Security Notes
 
-- Your password is only used for initial sudo authentication and is immediately cleared from memory
+- Your password is only used for initial sudo authentication and is immediately cleared.
 - Your password is never written to disk.
 - The sudo session is cleared and privileges are revoked on exit.
-- No network connections are made - everything runs locally
+- No network connections are made - everything runs locally.
 
 ## Troubleshooting
 
@@ -143,18 +143,18 @@ battery_boost --font-size 1
 
 **TLP not found error:**
 
-- Ensure TLP is installed and in your PATH
-- Verify TLP is properly configured for your system
+- Ensure TLP is installed and in your PATH.
+- Verify TLP is properly configured for your system.
 
 **Authentication issues:**
 
-- Make sure you have sudo privileges
-- Check that your password is correct
+- Make sure you have sudo privileges.
+- Check that your password is correct.
 
 **Battery status not showing:**
 
-- Verify your system's battery is detected by TLP
-- Check that `sudo tlp-stat -b` works from the command line
+- Verify your system's battery is detected by TLP.
+- Check that `sudo tlp-stat -b` works from the command line.
 
 ## Contributing
 

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from battery_boost.app import App
 
 
-def authenticate(parent: App) -> None:
+def authenticate(_parent: App) -> None:
     """Prompt user for sudo password and validate.
 
     Runs `sudo -v` to cache credentials for subsequent commands.
@@ -30,15 +30,14 @@ def authenticate(parent: App) -> None:
         )
 
         if _password is None:
-            parent.quit_app("Cancelled.")
+            _parent.quit_app("Cancelled.")
 
         # Don't strip() - whitespaces are unusual but valid password characters.
         if not _password:
             if attempt < max_tries - 1:
                 messagebox.showerror("Error", "Password required.")
                 continue
-            else:
-                break
+            break
 
         try:
             subprocess.run(['sudo', '-S', '-v'],
@@ -50,21 +49,22 @@ def authenticate(parent: App) -> None:
             _password = None  # Overwrite password immediately.
             return
         except FileNotFoundError:
-            parent.quit_on_error("sudo not found on this system.")
+            _parent.quit_on_error("sudo not found on this system.")
         except subprocess.TimeoutExpired:
-            parent.quit_on_error("Authentication process timed out.",
-                                 "Fatal Error")
+            _parent.quit_on_error("Authentication process timed out.",
+                                  "Fatal Error")
         except subprocess.CalledProcessError:
             # Only realistic failure remaining is "wrong password".
             if attempt < max_tries - 1:
                 messagebox.showerror("Error", "Incorrect password.")
         except Exception as exc:  # pylint: disable=broad-exception-caught
             # Defensively catch any unexpected errors and quit.
-            parent.quit_on_error(f"Unexpected Error {exc}")
+            _parent.quit_on_error(f"Unexpected Error {exc}",
+                                  "Fatal Error")
 
         finally:
             _password = None  # Ensure always cleared.
 
     # Failed every attempt.
     message = f"Authentication failed {max_tries} times.\n\nClick OK to Quit."
-    parent.quit_on_error(message)
+    _parent.quit_on_error(message)

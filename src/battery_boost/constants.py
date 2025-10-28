@@ -4,8 +4,8 @@ from enum import Enum
 from typing import TypedDict
 
 
-# 10 min interval between re-validating sudo password
-REFRESH_INTERVAL_MS: int = 600_000
+# Check TLP battery statistics every 60 seconds.
+REFRESH_INTERVAL_MS: int = 60_000
 
 
 # UI Themes

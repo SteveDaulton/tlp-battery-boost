@@ -16,6 +16,10 @@ if TYPE_CHECKING:
     from battery_boost.app import App
 
 
+class TlpCommandError(Exception):
+    """Raised when tlp-stat fails to run properly."""
+
+
 def initialise_tlp(_parent: App) -> None:
     """Initialize TLP to the default state.
 
@@ -27,7 +31,7 @@ def initialise_tlp(_parent: App) -> None:
         return
 
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        messagebox.showerror("Unexpected Error",
+        messagebox.showerror("TLP Command Error",
                              f"Could not initialize TLP.\n{exc}",
                              parent=_parent)
         _parent.quit_app(f"Error: Could not initialize TLP: {exc}")
@@ -42,16 +46,23 @@ def tlp_toggle_state(_parent: App, current_state: BatteryState) -> None:
     """
     try:
         if current_state == BatteryState.DEFAULT:
-            subprocess.run(['sudo', 'tlp', 'fullcharge'], check=True)
+            subprocess.run(['sudo', 'tlp', 'fullcharge'],
+                           check=True,
+                           capture_output=True)
         else:
-            subprocess.run(['sudo', 'tlp', 'start'], check=True)
+            subprocess.run(['sudo', 'tlp', 'start'],
+                           check=True,
+                           capture_output=True)
+    except FileNotFoundError as exc:
+        _parent.quit_on_error(f"Command not found: {exc.filename}",
+                              "TLP Command Error")
     except subprocess.CalledProcessError as exc:
         _parent.quit_on_error(f"TLP command failed: {exc.returncode}:\n"
-                              f"{exc.stderr or exc}")
-    except FileNotFoundError as exc:
-        _parent.quit_on_error(f"Command not found: {exc.filename}")
+                              f"{exc.stderr or exc}",
+                              "TLP Command Error")
     except OSError as exc:
-        _parent.quit_on_error(f"System error while running TLP command: {exc}")
+        _parent.quit_on_error(f"System error while running TLP command: {exc}",
+                              "TLP Command Error")
 
 
 def tlp_get_stats() -> str:
@@ -65,10 +76,11 @@ def tlp_get_stats() -> str:
                                 text=True,
                                 capture_output=True,
                                 check=True)
+    # pylint: disable=raise-missing-from
     except subprocess.CalledProcessError as exc:
-        return f"Error: Failed to run tlp-stat:\n{exc.stderr or exc}"
+        raise TlpCommandError(f"Failed to run tlp-stat:\n{exc.stderr or exc}")
     except OSError as exc:
-        return f"Error: System error while running tlp-stat: {exc}"
+        raise TlpCommandError(f"System error while running tlp-stat: {exc}")
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        return f"Error: Unexpected error: {exc}"
+        raise TlpCommandError(f"Unexpected error: {exc}")
     return result.stdout

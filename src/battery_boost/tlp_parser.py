@@ -15,9 +15,6 @@ def parse_tlp_stats(tlp_stats: str) -> str:
     Returns:
         str: Formatted battery statistics or an error message.
     """
-    if tlp_stats.lower().startswith('error'):
-        return tlp_stats
-
     if not tlp_stats.strip():
         return "No battery data found."
 

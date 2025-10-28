@@ -6,11 +6,27 @@ import shutil
 from typing import TypeAlias
 
 from battery_boost.constants import THEME, ThemeName, FONT_SIZES, ThemeKeys
+from battery_boost.tlp_command import TlpCommandError, tlp_get_stats
+from battery_boost.tlp_parser import parse_tlp_stats
 
 
 def check_tlp_installed() -> bool:
     """Return True if TLP is installed and available in PATH, else False."""
     return bool(shutil.which('tlp'))
+
+
+def get_battery_stats(action: str) -> str:
+    """Retrieve raw statistics from battery.
+
+    Returns:
+        Formatted statistics or error message as a string.
+    """
+    try:
+        raw_stats = tlp_get_stats()
+        parsed = parse_tlp_stats(raw_stats)
+        return f"{action}{parsed}"
+    except TlpCommandError as exc:
+        return f"Error: {exc}"
 
 
 Config: TypeAlias = tuple[ThemeKeys, tuple[str, int], tuple[str, int], float]

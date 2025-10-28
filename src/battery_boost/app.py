@@ -4,7 +4,6 @@ Provides a simple interface to toggle between normal and full-charge modes,
 refresh sudo authentication, and display battery statistics.
 """
 
-import subprocess
 import sys
 import tkinter as tk
 from tkinter import ttk
@@ -19,12 +18,11 @@ from battery_boost.constants import (
     STATES,
     REFRESH_INTERVAL_MS
 )
-from battery_boost.helper_functions import check_tlp_installed
+from battery_boost.helper_functions import check_tlp_installed, get_battery_stats
 from battery_boost.tlp_command import (
     initialise_tlp,
-    tlp_toggle_state, tlp_get_stats,
+    tlp_toggle_state
 )
-from battery_boost.tlp_parser import parse_tlp_stats
 
 
 class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
@@ -77,9 +75,10 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
 
         # Ensure TLP is in a known (default enabled) state.
         initialise_tlp(self)
-        self.write_stats(STATES[BatteryState.DEFAULT]['action'])
         self.apply_state()
-        self.refresh_authentication()
+        self.battery_stats = get_battery_stats(STATES[BatteryState.DEFAULT]['action'])
+        self.write_stats(self.battery_stats)
+        self.refresh_battery_stats()
 
     def _init_window(self) -> None:
         """Initialize the window."""
@@ -152,15 +151,14 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                            expand=True,
                            fill=tk.BOTH)
 
-    def refresh_authentication(self) -> None:
-        """Periodically refresh sudo authentication to maintain privileges."""
-        try:
-            subprocess.run(['sudo', '-v'], check=True)
-        except (subprocess.CalledProcessError, OSError) as exc:
-            self.quit_app(f"Authentication failure: {exc}")
-
+    def refresh_battery_stats(self) -> None:
+        """Periodically refresh the battery statistics."""
+        new_battery_stats = get_battery_stats(STATES[self.ui_state]['action'])
+        if self.battery_stats != new_battery_stats:
+            self.battery_stats = new_battery_stats
+            self.write_stats(self.battery_stats)
         # noinspection PyTypeChecker
-        self._refresh_job = self.after(REFRESH_INTERVAL_MS, self.refresh_authentication)
+        self._refresh_job = self.after(REFRESH_INTERVAL_MS, self.refresh_battery_stats)
 
     def quit_on_error(self, error_message: str, title: str = "Error") -> NoReturn:
         """Display Error dialog and quit."""
@@ -215,7 +213,6 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
 
         # Text box
         self.text_box.config(bg=background, fg=text_color)
-        self.write_stats(state['action'])
 
     def toggle_state(self) -> None:
         """Switch between default and full-charge profiles and update the UI."""
@@ -226,11 +223,15 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                          else BatteryState.RECHARGE)
         self.apply_state()
 
-    def write_stats(self, action: str = "") -> None:
+        # Update text widget.
+        next_battery_action = STATES[self.ui_state]['action']
+        self.battery_stats = get_battery_stats(next_battery_action)
+        self.write_stats(self.battery_stats)
+
+    def write_stats(self, stats: str) -> None:
         """Update the text area with the current TLP battery stats."""
-        raw_stats = tlp_get_stats()
-        stats = f"{action}{parse_tlp_stats(raw_stats)}"
-        print(stats)  # echo to terminal
+        # Graceful accessibility fallback: also echo stats to the terminal.
+        print(stats)
         # noinspection PyTypeChecker
         self.text_box.config(state=tk.NORMAL)
         self.text_box.delete('1.0', tk.END)
