@@ -6,13 +6,13 @@ import shutil
 from typing import TypeAlias
 
 from battery_boost.constants import THEME, ThemeName, FONT_SIZES, ThemeKeys
-from battery_boost.tlp_command import TlpCommandError, tlp_get_stats
+from battery_boost.shell_commands import TlpCommandError, tlp_get_stats
 from battery_boost.tlp_parser import parse_tlp_stats
 
 
-def check_tlp_installed() -> bool:
-    """Return True if TLP is installed and available in PATH, else False."""
-    return bool(shutil.which('tlp'))
+def command_on_path(command: str) -> bool:
+    """Return True if command is available in PATH, else False."""
+    return bool(shutil.which(command))
 
 
 def get_battery_stats(action: str) -> str:

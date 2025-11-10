@@ -18,10 +18,12 @@ from battery_boost.constants import (
     STATES,
     REFRESH_INTERVAL_MS
 )
-from battery_boost.helper_functions import check_tlp_installed, get_battery_stats
-from battery_boost.tlp_command import (
+from battery_boost.helper_functions import command_on_path, get_battery_stats
+from battery_boost.shell_commands import (
     initialise_tlp,
-    tlp_toggle_state
+    tlp_toggle_state,
+    tlp_active,
+    tlp_running
 )
 
 
@@ -55,9 +57,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.protocol('WM_DELETE_WINDOW', self.quit_app)
 
         # Fail early if TLP not available.
-        if not check_tlp_installed():
-            self.quit_on_error("TLP is not installed or not in PATH.",
-                               "Fatal Error")
+        self._verify_tlp_ready()
 
         # Acquire root for commands.
         self._refresh_job: str | None = None
@@ -150,6 +150,19 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                            pady=int(10 * self.scale_factor),
                            expand=True,
                            fill=tk.BOTH)
+
+    def _verify_tlp_ready(self) -> None:
+        """Verify that TLP is installed and active. Quit on fatal error."""
+        if not command_on_path('tlp'):
+            self.quit_on_error("TLP is not installed or not in PATH.",
+                               "Fatal Error")
+        if command_on_path('systemctl'):
+            if not tlp_running():
+                self.quit_on_error("TLP service is not active.",
+                                   "Fatal Error")
+        elif not tlp_active():  # Less reliable fallback.
+            self.quit_on_error("TLP service is not active.",
+                               "Fatal Error")
 
     def refresh_battery_stats(self) -> None:
         """Periodically refresh the battery statistics."""

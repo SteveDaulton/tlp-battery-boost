@@ -6,11 +6,11 @@ Battery Boost allows users to toggle between normal optimization and full-charge
 with battery status display.
 """
 
-import subprocess
 import sys
 
 from battery_boost.app import App
 from battery_boost.helper_functions import parse_args
+from battery_boost.shell_commands import revoke_permissions
 
 
 def main() -> None:
@@ -28,7 +28,7 @@ def main() -> None:
         print(f"Fatal error: {exc}", file=sys.stderr)
         sys.exit(1)
     finally:
-        subprocess.run(['sudo', '-K'], check=False)
+        revoke_permissions()
 
 
 if __name__ == '__main__':
