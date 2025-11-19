@@ -5,16 +5,23 @@ Initialises and launches the Tkinter GUI for managing TLP battery charge profile
 Battery Boost allows users to toggle between normal optimization and full-charge modes,
 with battery status display.
 """
-
+import logging
 import sys
 
 from battery_boost.app import App
+from battery_boost.constants import DEBUG
 from battery_boost.helper_functions import parse_args
 from battery_boost.shell_commands import revoke_permissions
 
 
 def main() -> None:
     """Configure and launch app."""
+    debug_level = logging.DEBUG if DEBUG else logging.INFO
+    logging.basicConfig(
+        level=debug_level,
+        format="%(levelname)s: %(name)s %(message)s",
+    )
+
     theme_choice, font_normal, font_small, factor = parse_args(sys.argv[1:])
     app = None
     try:
@@ -25,7 +32,7 @@ def main() -> None:
             app.destroy()
     # Catchall if App fails to launch with unhandled exception.
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        print(f"Fatal error: {exc}", file=sys.stderr)
+        logging.critical(exc)
         sys.exit(1)
     finally:
         revoke_permissions()

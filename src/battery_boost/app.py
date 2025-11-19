@@ -3,7 +3,7 @@
 Provides a simple interface to toggle between normal and full-charge modes,
 refresh sudo authentication, and display battery statistics.
 """
-
+import logging
 import sys
 import tkinter as tk
 from tkinter import ttk
@@ -25,6 +25,9 @@ from battery_boost.shell_commands import (
     tlp_active,
     tlp_running
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
@@ -83,7 +86,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
     def _init_window(self) -> None:
         """Initialize the window."""
         self.title('Battery Boost')
-        self.geometry(f'{int(400 * self.scale_factor)}x{int(360 * self.scale_factor)}')
+        self.geometry(f'{int(400 * self.scale_factor)}x{int(450 * self.scale_factor)}')
         self.minsize(int(200 * self.scale_factor), int(150 * self.scale_factor))
         self.maxsize(int(600 * self.scale_factor), int(600 * self.scale_factor))
 
@@ -126,7 +129,8 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.button = ttk.Button(self,
                                  style='Default.TButton',
                                  command=self.toggle_state)
-        instructions = ("You can close this app after\n"
+        instructions = ("AC power must be connected.\n\n"
+                        "You can close this app after\n"
                         "selecting the required profile.")
         self.instruction_label = ttk.Label(self,
                                            style='Default.TLabel',
@@ -166,6 +170,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
 
     def refresh_battery_stats(self) -> None:
         """Periodically refresh the battery statistics."""
+        logger.debug("Refreshing battery statistics")
         new_battery_stats = get_battery_stats(STATES[self.ui_state]['action'])
         if self.battery_stats != new_battery_stats:
             self.battery_stats = new_battery_stats
@@ -188,7 +193,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
             try:
                 self.after_cancel(self._refresh_job)
             except (tk.TclError, RuntimeError) as exc:
-                print(f"quit_app failed to cancel job {exc}")
+                logger.critical("quit_app failed to cancel job %s", exc)
         self.destroy()
         sys.exit(status)
 
@@ -229,7 +234,8 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
 
     def toggle_state(self) -> None:
         """Switch between default and full-charge profiles and update the UI."""
-        tlp_toggle_state(self, self.ui_state)
+        if not tlp_toggle_state(self, self.ui_state):
+            return
         # Flip UI state
         self.ui_state = (BatteryState.DEFAULT
                          if self.ui_state == BatteryState.RECHARGE
@@ -240,11 +246,12 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         next_battery_action = STATES[self.ui_state]['action']
         self.battery_stats = get_battery_stats(next_battery_action)
         self.write_stats(self.battery_stats)
+        return
 
     def write_stats(self, stats: str) -> None:
         """Update the text area with the current TLP battery stats."""
-        # Graceful accessibility fallback: also echo stats to the terminal.
-        print(stats)
+        # Accessibility fallback: also echo stats to the terminal.
+        logger.info(stats)
         # noinspection PyTypeChecker
         self.text_box.config(state=tk.NORMAL)
         self.text_box.delete('1.0', tk.END)

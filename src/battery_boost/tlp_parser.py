@@ -48,6 +48,8 @@ def parse_tlp_stats(tlp_stats: str) -> str:
             battery_info['charge'] = _get_battery_value(line)
         elif line.startswith('Capacity'):
             battery_info['capacity'] = _get_battery_value(line)
+        elif 'status' in line:
+            battery_info['status'] = _get_battery_status(line)
 
     # Add the last battery
     if current_battery and battery_info:
@@ -66,11 +68,13 @@ def _format_battery_str(battery_name: str, info: defaultdict[str, str]) -> str:
     Returns:
         str: Formatted string representing the battery.
     """
-    return (f"{battery_name}:\n"
+    return (f"Current Status: {info['status']}\n\n"
+            f"{battery_name}:\n"
             f"  Start threshold: {info['start']}%\n"
             f"  End threshold: {info['end']}%\n"
             f"  Current Charge: {info['charge']}% "
-            f"of {info['capacity']}%\n")
+            f"of {info['capacity']}%\n"
+            )
 
 
 def _get_battery_value(line_text: str) -> str:
@@ -92,3 +96,11 @@ def _get_battery_value(line_text: str) -> str:
     except ValueError:
         return UNKNOWN
     return token
+
+
+def _get_battery_status(line_text: str) -> str:
+    """Extract the battery status from a TLP output line."""
+    parts = line_text.split('=')
+    if len(parts) != 2:
+        return UNKNOWN
+    return parts[1].strip()

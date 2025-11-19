@@ -68,12 +68,14 @@ def initialise_tlp(_parent: App) -> None:
         _parent.quit_app(f"Error: Could not initialize TLP: {exc}")
 
 
-def tlp_toggle_state(_parent: App, current_state: BatteryState) -> None:
+def tlp_toggle_state(_parent: App, current_state: BatteryState) -> bool:
     """Toggle TLP between default and full-charge profiles.
 
     Args:
         _parent: The Tkinter app instance, used for error dialogs.
         current_state: The current battery profile.
+    Returns:
+        True if successful, False otherwise.
     """
     try:
         if current_state == BatteryState.DEFAULT:
@@ -90,12 +92,26 @@ def tlp_toggle_state(_parent: App, current_state: BatteryState) -> None:
         _parent.quit_on_error(f"Command not found: {exc.filename}",
                               "TLP Command Error")
     except subprocess.CalledProcessError as exc:
+        # Special case:fullcharge requires AC power.
+        if (current_state == BatteryState.DEFAULT and
+                exc.returncode == 2 and
+                b'fullcharge is possible on AC power only' in exc.stderr):
+            messagebox.showwarning(
+                "AC Power Required",
+                "Full charge mode requires AC power.\n"
+                "Plug in your laptop and try again.",
+                parent=_parent
+            )
+            return False  # Non-fatal failure
+
         _parent.quit_on_error(f"TLP command failed: {exc.returncode}:\n"
                               f"{exc.stderr or exc}",
                               "TLP Command Error")
+
     except (OSError, subprocess.TimeoutExpired) as exc:
         _parent.quit_on_error(f"System error while running TLP command: {exc}",
                               "TLP Command Error")
+    return True
 
 
 def tlp_get_stats() -> str:
