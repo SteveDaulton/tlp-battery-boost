@@ -8,11 +8,18 @@
   <img src="https://raw.githubusercontent.com/SteveDaulton/tlp-battery-boost/main/BatteryBoost.png" alt="Battery Boost Screenshot">
 </p>
 
-_A lightweight Tkinter GUI to toggle TLP between normal battery optimization mode and temporary full-charge mode ( tlp fullcharge )._
+_A lightweight Tkinter GUI to toggle TLP between normal battery optimisation mode and temporary full-charge mode
+( tlp fullcharge )._
 
 ## Overview
 
-Battery Boost provides an easy-to-use interface for switching between normal and full-charge battery profiles using [TLP](https://linrunner.de/tlp/). It's designed for users who want to extend their battery lifespan by maintaining optimal charge levels during normal use, while having quick access to full charging when needed.
+Battery Boost provides an easy-to-use interface for switching between normal and full-charge
+battery profiles using [TLP](https://linrunner.de/tlp/).
+It is designed for users who want to extend their battery lifespan by maintaining optimal charge
+during everyday use, while still having convenient access to full charging when needed.
+
+Note that full-charge mode requires AC power. If you attempt to enable it while on battery, the app will warn you.
+
 
 ## Features
 
@@ -21,13 +28,13 @@ Battery Boost provides an easy-to-use interface for switching between normal and
 - **Battery Status Display:** View current charge levels and threshold settings.
 - **Theme Support:** Choose between light and dark themes.
 - **Adjustable Font Sizes:** Scale the interface to your preference.
-- **Terminal Integration:** When run from terminal, displays status information for debugging.
+- **Terminal Integration:** When launched from a terminal, status messages are also printed to stdout.
 
 ## Requirements
 
 - Linux with TLP installed and configured
 - Python 3.10+
-- Tkinter (python3-tk)
+- Tkinter (`python3-tk`)
 - sudo privileges for TLP commands
 
 ## Installation
@@ -53,6 +60,18 @@ If you’d like Battery Boost to appear in your system’s application menu or o
 - Most Linux desktop environments (such as GNOME, KDE, XFCE) allow you to **add a custom launcher** manually.
 - Set the command to `battery_boost` and (optionally) include options such as `battery_boost -t dark -f 2`.
 
+**Example `.desktop` File**
+
+```
+[Desktop Entry]
+Name=Battery Boost
+Exec=battery_boost
+Icon=/usr/share/pixmaps/BatteryBoost.png
+Type=Application
+Categories=Utility;HardwareSettings;
+Comment=Toggle TLP fullcharge mode
+Terminal=false
+```
 
 ## Usage
 
@@ -62,10 +81,10 @@ To launch the graphical interface:
 battery_boost
 ```
 
-The app will:
+When launched the app will:
 
 - Prompt for your sudo password.
-- Initialize TLP to default settings.
+- Initialise TLP to default settings.
 - Show the current battery status.
 - Provide a button to toggle between default and full-charge modes.
 
@@ -98,7 +117,7 @@ options:
 **Notes:**
 
 - `-f` sets the font size (1=smallest, 5=largest; default=3).  
-- `-t` sets the color theme (light or dark; default=light).  
+- `-t` sets the colour theme (light or dark; default=light).  
 - `-v` prints the program version.  
 - `-h` shows this help message and exits.
 
@@ -129,9 +148,12 @@ battery_boost --font-size 1
 
 ## Security Notes
 
-- Your password is only used for initial sudo authentication and is immediately cleared.
-- Your password is never written to disk.
-- The sudo session is cleared and privileges are revoked on exit.
+Authentication is managed by `sudo`, and the temporary variable holding the password is cleared
+(reference removed) immediately after authentication.
+
+- Your password is only used for initial sudo authentication.
+- Your password is never logged, transmitted, or written to disk.
+- `sudo` privileges are revoked on exit using `sudo --remove-timestamp`.
 - No network connections are made - everything runs locally.
 
 ## Troubleshooting
@@ -145,6 +167,13 @@ battery_boost --font-size 1
 
 - Ensure TLP is installed and in your PATH.
 - Verify TLP is properly configured for your system.
+
+```bash
+# Verify TLP works as expected:
+sudo tlp-stat -b
+# Try starting tlp manually:
+sudo tlp start
+```
 
 **Authentication issues:**
 
