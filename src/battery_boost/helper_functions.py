@@ -3,6 +3,7 @@
 import argparse
 from importlib.metadata import version
 import shutil
+from pathlib import Path
 from typing import TypeAlias
 
 from battery_boost.constants import THEME, ThemeName, FONT_SIZES, ThemeKeys
@@ -27,6 +28,24 @@ def get_battery_stats(action: str) -> str:
         return f"{action}{parsed}"
     except TlpCommandError as exc:
         return f"Error: {exc}"
+
+
+def on_ac_power() -> bool:
+    """Return True if on AC power, else False."""
+    base = Path("/sys/class/power_supply")
+    if not Path.is_dir(base):
+        # Unsupported system
+        raise RuntimeError("Power supply information not available.")
+
+    for child in base.iterdir():
+        online_file = child / "online"
+        if online_file.is_file():
+            try:
+                return online_file.read_text().strip() == "1"
+            except OSError:
+                pass
+
+    return False
 
 
 Config: TypeAlias = tuple[ThemeKeys, tuple[str, int], tuple[str, int], float]
