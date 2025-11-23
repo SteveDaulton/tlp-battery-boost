@@ -31,7 +31,11 @@ def get_battery_stats(action: str) -> str:
 
 
 def on_ac_power() -> bool:
-    """Return True if on AC power, else False."""
+    """Return True if on AC power, else False.
+
+    Raises:
+        RuntimeError: If AC power cannot be determined.
+   """
     base = Path("/sys/class/power_supply")
     if not Path.is_dir(base):
         # Unsupported system
