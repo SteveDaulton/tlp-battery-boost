@@ -95,39 +95,38 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         style = ttk.Style(self)
         style.theme_use('clam')  # 'clam' allows color customizations.
 
-        # Create styles for both button states
+        # Button state styles.
         btn_common = {'relief': 'flat',
                       'foreground': self.theme['text'],
                       'font': self.standard_font}
 
-        style.configure('Default.TButton',
-                        background=self.theme['btn_normal'],
-                        **btn_common)
+        _opts = {**btn_common, 'background': self.theme['btn_normal']}
+        style.configure('Default.TButton', **_opts)
         style.map('Default.TButton',
                   background=[('active', self.theme['btn_active_normal'])])
 
-        style.configure('Recharge.TButton',
-                        background=self.theme['btn_charge'],
-                        **btn_common)
+        _opts = {**btn_common, 'background': self.theme['btn_charge']}
+        style.configure('Recharge.TButton', **_opts)
         style.map('Recharge.TButton',
                   background=[('active', self.theme['btn_active_charge'])])
 
-        # Label styles
-        top_label_common = {'foreground': self.theme['text'], 'font': self.standard_font}
-        style.configure('Default.TLabel',
-                        background=self.theme['background'],
-                        **top_label_common)
-        style.configure('Recharge.TLabel',
-                        background=self.theme['active'],
-                        **top_label_common)
+        # Label styles - Top Label.
+        top_label_common = {'foreground': self.theme['text'],
+                            'font': self.standard_font}
+        _opts = {**top_label_common, 'background': self.theme['background']}
+        style.configure('Default.TLabel', **_opts)
 
-        instruction_label_common = {'foreground': self.theme['text'], 'font': self.small_font}
-        style.configure('DefaultInstruction.TLabel',
-                        background=self.theme['background'],
-                        **instruction_label_common)
-        style.configure('RechargeInstruction.TLabel',
-                        background=self.theme['active'],
-                        **instruction_label_common)
+        _opts = {**top_label_common, 'background': self.theme['active']}
+        style.configure('Recharge.TLabel', **_opts)
+
+        # Instruction label.
+        instruction_label_common = {'foreground': self.theme['text'],
+                                    'font': self.small_font}
+        _opts = {**instruction_label_common, 'background': self.theme['background']}
+        style.configure('DefaultInstruction.TLabel', **_opts)
+
+        _opts = {**instruction_label_common, 'background': self.theme['active']}
+        style.configure('RechargeInstruction.TLabel', **_opts)
 
         self.style = style
 
