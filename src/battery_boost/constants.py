@@ -23,27 +23,27 @@ class ThemeName(Enum):
 ThemeKeys = TypedDict('ThemeKeys', {'background': str,
                                     'active': str,
                                     'text': str,
-                                    'button_0': str,
-                                    'active_0': str,
-                                    'button_1': str,
-                                    'active_1': str})
+                                    'btn_normal': str,
+                                    'btn_active_normal': str,
+                                    'btn_charge': str,
+                                    'btn_active_charge': str})
 
 
 THEME: dict[ThemeName, ThemeKeys] = {
     ThemeName.LIGHT: {'background': 'white',
                       'active': 'gold',
                       'text': 'black',
-                      'button_0': 'gainsboro',
-                      'active_0': 'darkgray',
-                      'button_1': 'goldenrod',
-                      'active_1': 'darkgoldenrod'},
+                      'btn_normal': 'gainsboro',
+                      'btn_active_normal': 'darkgray',
+                      'btn_charge': 'goldenrod',
+                      'btn_active_charge': 'darkgoldenrod'},
     ThemeName.DARK: {'background': 'gray15',
                      'active': 'firebrick4',
                      'text': 'white',
-                     'button_0': 'gray30',
-                     'active_0': 'gray40',
-                     'button_1': 'firebrick',
-                     'active_1': 'firebrick3'}
+                     'btn_normal': 'gray30',
+                     'btn_active_normal': 'gray40',
+                     'btn_charge': 'firebrick',
+                     'btn_active_charge': 'firebrick3'}
     }
 
 

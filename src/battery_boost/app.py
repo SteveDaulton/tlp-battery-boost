@@ -95,37 +95,44 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         style = ttk.Style(self)
         style.theme_use('clam')  # 'clam' allows color customizations.
 
-        # Create styles for both states
+        # Create styles for both button states
+        btn_common = {'relief': 'flat',
+                      'foreground': self.theme['text'],
+                      'font': self.standard_font}
+
         style.configure('Default.TButton',
-                        relief='flat',
-                        background=self.theme['button_0'],
-                        foreground=self.theme['text'],
-                        font=self.standard_font)
+                        background=self.theme['btn_normal'],
+                        **btn_common)
         style.map('Default.TButton',
-                  background=[('active', self.theme['active_0'])])
+                  background=[('active', self.theme['btn_active_normal'])])
 
         style.configure('Recharge.TButton',
-                        relief='flat',
-                        background=self.theme['button_1'],
-                        foreground=self.theme['text'],
-                        font=self.standard_font)
+                        background=self.theme['btn_charge'],
+                        **btn_common)
         style.map('Recharge.TButton',
-                  background=[('active', self.theme['active_1'])])
+                  background=[('active', self.theme['btn_active_charge'])])
 
+        # Label styles
+        top_label_common = {'foreground': self.theme['text'], 'font': self.standard_font}
         style.configure('Default.TLabel',
                         background=self.theme['background'],
-                        foreground=self.theme['text'],
-                        font=self.standard_font)
+                        **top_label_common)
         style.configure('Recharge.TLabel',
                         background=self.theme['active'],
-                        foreground=self.theme['text'],
-                        font=self.standard_font)
+                        **top_label_common)
+
+        instruction_label_common = {'foreground': self.theme['text'], 'font': self.small_font}
+        style.configure('DefaultInstruction.TLabel',
+                        background=self.theme['background'],
+                        **instruction_label_common)
+        style.configure('RechargeInstruction.TLabel',
+                        background=self.theme['active'],
+                        **instruction_label_common)
+
         self.style = style
 
     def _init_widgets(self) -> None:
-        self.label = ttk.Label(self,
-                               style='Default.TLabel',
-                               border=int(10 * self.scale_factor))
+        self.top_label = ttk.Label(self, style='Default.TLabel')
         self.button = ttk.Button(self,
                                  style='Default.TButton',
                                  command=self.toggle_state)
@@ -133,19 +140,18 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                         "You can close this app after\n"
                         "selecting the required profile.")
         self.instruction_label = ttk.Label(self,
-                                           style='Default.TLabel',
+                                           style='DefaultInstruction.TLabel',
                                            text=instructions,
-                                           justify='center',
-                                           font=self.small_font)
+                                           justify='center')
         self.text_box = tk.Text(self, height=2,
-                                bg=self.theme['background'],
+                                background=self.theme['background'],
                                 foreground=self.theme['text'],
                                 font=self.small_font)
         # noinspection PyTypeChecker
         self.text_box.config(state=tk.DISABLED)
 
     def _layout_widgets(self) -> None:
-        self.label.pack()
+        self.top_label.pack(pady=int(10 * self.scale_factor))
         self.button.pack()
         self.instruction_label.pack(pady=(int(5 * self.scale_factor),
                                           int(10 * self.scale_factor)))
@@ -201,36 +207,28 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         """Update the UI to reflect the current battery profile state."""
         state = STATES[self.ui_state]
 
-        # Colors:
+        # Window background (non-style background change)
         background = (self.theme['background']
                       if self.ui_state is BatteryState.DEFAULT
                       else self.theme['active'])
+        self.configure(background=background)
 
-        text_color = self.theme['text']
+        # Update styles
+        if self.ui_state is BatteryState.RECHARGE:
+            top_label_style = 'Recharge.TLabel'
+            instruction_label_style = 'RechargeInstruction.TLabel'
+            button_style = 'Recharge.TButton'
+        else:
+            top_label_style = 'Default.TLabel'
+            instruction_label_style = 'DefaultInstruction.TLabel'
+            button_style = 'Default.TButton'
 
-        # Change window background
-        self.configure(bg=background)
-
-        # Update label text & style
-        label_style = ('Recharge.TLabel'
-                       if self.ui_state is BatteryState.RECHARGE
-                       else 'Default.TLabel')
-        self.label.configure(style=label_style,
-                             text=state['label_text'],
-                             background=background,
-                             foreground=text_color)
-        self.instruction_label.configure(style=label_style,
-                                         background=background,
-                                         foreground=text_color)
-
-        # Update button text & style
-        button_style = ('Recharge.TButton'
-                        if self.ui_state is BatteryState.RECHARGE
-                        else 'Default.TButton')
+        self.top_label.configure(style=top_label_style, text=state['label_text'])
+        self.instruction_label.configure(style=instruction_label_style)
         self.button.configure(style=button_style, text=state['button_text'])
 
-        # Text box
-        self.text_box.config(bg=background, fg=text_color)
+        # Text box (tk widget does not have ttk style).
+        self.text_box.config(background=background, foreground=self.theme['text'])
 
     def toggle_state(self) -> None:
         """Switch between default and full-charge profiles and update the UI."""
