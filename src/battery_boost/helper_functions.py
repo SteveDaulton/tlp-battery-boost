@@ -37,19 +37,20 @@ def on_ac_power() -> bool:
         RuntimeError: If AC power cannot be determined.
    """
     base = Path("/sys/class/power_supply")
-    if not Path.is_dir(base):
-        # Unsupported system
-        raise RuntimeError("Power supply information not available.")
-
-    for child in base.iterdir():
-        online_file = child / "online"
-        if online_file.is_file():
+    if base.is_dir():
+        for child in base.iterdir():
+            type_file = child / "type"
             try:
-                return online_file.read_text().strip() == "1"
+                # Check for AC adaptor.
+                if type_file.is_file() and type_file.read_text().strip() == "Mains":
+                    # Then check if it online.
+                    online_file = child / "online"
+                    if online_file.is_file():
+                        return online_file.read_text().strip() == "1"
             except OSError:
                 pass
-
-    return False
+    # Unsupported system
+    raise RuntimeError("Power supply information not available.")
 
 
 Config: TypeAlias = tuple[ThemeKeys, tuple[str, int], tuple[str, int], float]

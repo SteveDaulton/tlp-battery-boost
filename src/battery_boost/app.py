@@ -18,7 +18,11 @@ from battery_boost.constants import (
     STATES,
     REFRESH_INTERVAL_MS
 )
-from battery_boost.helper_functions import command_on_path, get_battery_stats
+from battery_boost.helper_functions import (
+    command_on_path,
+    get_battery_stats,
+    on_ac_power
+)
 from battery_boost.shell_commands import (
     initialise_tlp,
     tlp_toggle_state,
@@ -61,6 +65,10 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
 
         # Fail early if TLP not available.
         self._verify_tlp_ready()
+
+        # Ensure AC power connected.
+        while not self.is_on_ac_power():
+            pass
 
         # Acquire root for commands.
         self._refresh_job: str | None = None
@@ -172,6 +180,21 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         elif not tlp_active():  # Less reliable fallback.
             self.quit_on_error("TLP service is not active.",
                                "Fatal Error")
+
+    def is_on_ac_power(self) -> bool:
+        """Check if app is on AC power."""
+        try:
+            if on_ac_power():
+                return True
+        except RuntimeError as exc:
+            self.quit_on_error(str(exc), "Unsupported system")
+        messagebox.showwarning(
+            "AC Power Required",
+            "Full charge mode requires AC power.\n"
+            "Plug in your laptop and try again.",
+            parent=self
+        )
+        return False  # Non-fatal failure
 
     def refresh_battery_stats(self) -> None:
         """Periodically refresh the battery statistics."""
