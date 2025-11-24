@@ -39,7 +39,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
     def __init__(self,
                  theme: ThemeKeys = DEFAULT_THEME,
                  standard_font: tuple[str, int] = ('TkDefaultFont', 12),
-                 small_font: tuple[str, int] = ('TkDefaultFont', 9),
+                 small_font: tuple[str, int] = ('TkDefaultFont', 10),
                  scale_factor: float = 1.0,
                  ) -> None:
         """Initialize the Tkinter UI, state, and baseline TLP configuration.
