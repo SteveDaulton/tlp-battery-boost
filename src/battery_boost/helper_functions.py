@@ -19,6 +19,9 @@ def command_on_path(command: str) -> bool:
 def get_battery_stats(action: str) -> str:
     """Retrieve raw statistics from battery.
 
+    Args:
+        action: Describes current TLP action - fullcharge or default.
+
     Returns:
         Formatted statistics or error message as a string.
     """
