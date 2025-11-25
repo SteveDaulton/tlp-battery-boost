@@ -121,7 +121,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                   background=[('active', self.theme['btn_active_charge'])])
 
         _opts = {**btn_common,
-                 'foreground': self.theme['btn_discharge_fg'],
+                 'foreground': self.theme['btn_discharge_text'],
                  'background': self.theme['btn_discharge']}
         style.configure('Discharge.TButton', **_opts)
         style.map('Discharge.TButton',
@@ -130,19 +130,19 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         # Label styles - Top Label.
         top_label_common = {'foreground': self.theme['text'],
                             'font': self.standard_font}
-        _opts = {**top_label_common, 'background': self.theme['background']}
+        _opts = {**top_label_common, 'background': self.theme['default_bg']}
         style.configure('Default.TLabel', **_opts)
 
-        _opts = {**top_label_common, 'background': self.theme['active']}
+        _opts = {**top_label_common, 'background': self.theme['charge_bg']}
         style.configure('Recharge.TLabel', **_opts)
 
         # Instruction label.
         instruction_label_common = {'foreground': self.theme['text'],
                                     'font': self.small_font}
-        _opts = {**instruction_label_common, 'background': self.theme['background']}
+        _opts = {**instruction_label_common, 'background': self.theme['default_bg']}
         style.configure('DefaultInstruction.TLabel', **_opts)
 
-        _opts = {**instruction_label_common, 'background': self.theme['active']}
+        _opts = {**instruction_label_common, 'background': self.theme['charge_bg']}
         style.configure('RechargeInstruction.TLabel', **_opts)
 
         self.style = style
@@ -160,7 +160,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                                            text=instructions,
                                            justify='center')
         self.text_box = tk.Text(self, height=2,
-                                background=self.theme['background'],
+                                background=self.theme['default_bg'],
                                 foreground=self.theme['text'],
                                 font=self.small_font)
         # noinspection PyTypeChecker
@@ -257,9 +257,9 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         state = STATES[self.ui_state]
 
         # Window background (non-style background change)
-        background = (self.theme['background']
+        background = (self.theme['default_bg']
                       if self.ui_state is BatteryState.DEFAULT
-                      else self.theme['active'])
+                      else self.theme['charge_bg'])
         self.configure(background=background)
 
         # Update styles

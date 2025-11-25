@@ -20,8 +20,8 @@ class ThemeName(Enum):
     DARK = 'dark'
 
 
-ThemeKeys = TypedDict('ThemeKeys', {'background': str,
-                                    'active': str,
+ThemeKeys = TypedDict('ThemeKeys', {'default_bg': str,
+                                    'charge_bg': str,
                                     'text': str,
                                     'btn_normal': str,
                                     'btn_active_normal': str,
@@ -29,35 +29,35 @@ ThemeKeys = TypedDict('ThemeKeys', {'background': str,
                                     'btn_active_charge': str,
                                     'btn_discharge': str,
                                     'btn_active_discharge': str,
-                                    'btn_discharge_fg': str
+                                    'btn_discharge_text': str
                                     })
 
 
 THEME: dict[ThemeName, ThemeKeys] = {
-    ThemeName.LIGHT: {'background': 'white',
-                      'active': 'gold',
-                      'text': 'black',
-                      'btn_normal': 'gainsboro',
-                      'btn_active_normal': 'darkgray',
-                      'btn_charge': 'goldenrod',
-                      'btn_active_charge': 'darkgoldenrod',
-                      'btn_discharge': 'red',
-                      'btn_active_discharge': 'darkred',
-                      'btn_discharge_fg': 'white'},
-    ThemeName.DARK: {'background': 'gray15',
-                     'active': 'firebrick4',
-                     'text': 'white',
-                     'btn_normal': 'gray30',
-                     'btn_active_normal': 'gray40',
-                     'btn_charge': 'firebrick',
-                     'btn_active_charge': 'firebrick3',
-                     'btn_discharge': 'red',
-                     'btn_active_discharge': 'darkred',
-                     'btn_discharge_fg': 'white'}
+    ThemeName.LIGHT: {'default_bg': '#FFFFFF',
+                      'charge_bg': '#BBFFBB',
+                      'text': '#000000',
+                      'btn_normal': '#DDDDDD',
+                      'btn_active_normal': '#CCCCCC',
+                      'btn_charge': '#99DD99',
+                      'btn_active_charge': '#88EE88',
+                      'btn_discharge': '#DD0000',
+                      'btn_active_discharge': '#FF0000',
+                      'btn_discharge_text': '#FFFFFF'},
+    ThemeName.DARK: {'default_bg': '#222233',
+                     'charge_bg': '#114411',
+                     'text': '#FFFFFF',
+                     'btn_normal': '#555555',
+                     'btn_active_normal': '#666666',
+                     'btn_charge': '#228822',
+                     'btn_active_charge': '#009900',
+                     'btn_discharge': '#DD0000',
+                     'btn_active_discharge': '#FF0000',
+                     'btn_discharge_text': '#FFFFFF'}
     }
 
 
-DEFAULT_THEME = THEME[ThemeName.LIGHT]
+DEFAULT_THEME = THEME[ThemeName.DARK]
 
 
 # Font Sizes
