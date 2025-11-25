@@ -26,7 +26,11 @@ ThemeKeys = TypedDict('ThemeKeys', {'background': str,
                                     'btn_normal': str,
                                     'btn_active_normal': str,
                                     'btn_charge': str,
-                                    'btn_active_charge': str})
+                                    'btn_active_charge': str,
+                                    'btn_discharge': str,
+                                    'btn_active_discharge': str,
+                                    'btn_discharge_fg': str
+                                    })
 
 
 THEME: dict[ThemeName, ThemeKeys] = {
@@ -36,14 +40,20 @@ THEME: dict[ThemeName, ThemeKeys] = {
                       'btn_normal': 'gainsboro',
                       'btn_active_normal': 'darkgray',
                       'btn_charge': 'goldenrod',
-                      'btn_active_charge': 'darkgoldenrod'},
+                      'btn_active_charge': 'darkgoldenrod',
+                      'btn_discharge': 'red',
+                      'btn_active_discharge': 'darkred',
+                      'btn_discharge_fg': 'white'},
     ThemeName.DARK: {'background': 'gray15',
                      'active': 'firebrick4',
                      'text': 'white',
                      'btn_normal': 'gray30',
                      'btn_active_normal': 'gray40',
                      'btn_charge': 'firebrick',
-                     'btn_active_charge': 'firebrick3'}
+                     'btn_active_charge': 'firebrick3',
+                     'btn_discharge': 'red',
+                     'btn_active_discharge': 'darkred',
+                     'btn_discharge_fg': 'white'}
     }
 
 

@@ -6,9 +6,15 @@ import shutil
 from pathlib import Path
 from typing import TypeAlias
 
-from battery_boost.constants import THEME, ThemeName, FONT_SIZES, ThemeKeys
+from battery_boost.constants import (
+    THEME,
+    ThemeName,
+    FONT_SIZES,
+    ThemeKeys,
+    DEFAULT_THEME
+)
 from battery_boost.shell_commands import TlpCommandError, tlp_get_stats
-from battery_boost.tlp_parser import parse_tlp_stats
+from battery_boost.tlp_parser import parse_tlp_stats, BatteryInfo
 
 
 def command_on_path(command: str) -> bool:
@@ -16,21 +22,18 @@ def command_on_path(command: str) -> bool:
     return bool(shutil.which(command))
 
 
-def get_battery_stats(action: str) -> str:
+def get_battery_stats() -> BatteryInfo:
     """Retrieve raw statistics from battery.
 
-    Args:
-        action: Describes current TLP action - fullcharge or default.
-
     Returns:
-        Formatted statistics or error message as a string.
+        BatteryInfo: discharge status, and battery statistics or
+        an error message.
     """
     try:
         raw_stats = tlp_get_stats()
-        parsed = parse_tlp_stats(raw_stats)
-        return f"{action}{parsed}"
+        return parse_tlp_stats(raw_stats)
     except TlpCommandError as exc:
-        return f"Error: {exc}"
+        return {'discharging': False, 'info': f"Error: {exc}"}
 
 
 def on_ac_power() -> bool:
@@ -88,8 +91,8 @@ def parse_args(argv: list[str]) -> Config:
     parser.add_argument(
         '-t', '--theme',
         choices=['light', 'dark'],
-        default='light',
-        help="Color theme",)
+        default='light' if DEFAULT_THEME == THEME[ThemeName.LIGHT] else 'dark',
+        help="Color theme")
 
     parsed_args = parser.parse_args(argv)
     standard_font, small_font, scale_factor = FONT_SIZES[parsed_args.font_size]

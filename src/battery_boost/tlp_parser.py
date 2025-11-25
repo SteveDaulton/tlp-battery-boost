@@ -1,23 +1,30 @@
 """Parsing utilities for interpreting `tlp-stat -b` output."""
 
 from collections import defaultdict
-
+from typing import TypedDict
 
 UNKNOWN = "???"
 
 
-def parse_tlp_stats(tlp_stats: str) -> str:
+class BatteryInfo(TypedDict):
+    """Battery info object."""
+    discharging: bool
+    info: str
+
+
+def parse_tlp_stats(tlp_stats: str) -> BatteryInfo:
     """Parse TLP battery stats and return a human-readable summary.
 
     Args:
         tlp_stats: Output string from `tlp_get_stats()`.
 
     Returns:
-        str: Formatted battery statistics or an error message.
+        BatteryInfo: discharge status, and battery statistics or an error message.
     """
     if not tlp_stats.strip():
-        return "No battery data found."
+        return {'discharging': False, 'info': "No battery data found."}
 
+    is_discharging = False
     lines = tlp_stats.splitlines()
     stats = []
     current_battery = ""
@@ -50,12 +57,15 @@ def parse_tlp_stats(tlp_stats: str) -> str:
             battery_info['capacity'] = _get_battery_value(line)
         elif 'status' in line:
             battery_info['status'] = _get_battery_status(line)
+            if battery_info['status'].strip().lower() == 'discharging':
+                is_discharging = True  # If any batery is discharging.
 
     # Add the last battery
     if current_battery and battery_info:
         stats.append(_format_battery_str(current_battery, battery_info))
 
-    return '\n'.join(stats) if stats else "No battery data found."
+    info = '\n'.join(stats) if stats else "No battery data found."
+    return {'discharging': is_discharging, 'info': info}
 
 
 def _format_battery_str(battery_name: str, info: defaultdict[str, str]) -> str:

@@ -87,8 +87,8 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         # Ensure TLP is in a known (default enabled) state.
         initialise_tlp(self)
         self.apply_state()
-        self.battery_stats = get_battery_stats(STATES[BatteryState.DEFAULT]['action'])
-        self.write_stats(self.battery_stats)
+        self.battery_stats = get_battery_stats()
+        self.write_stats(self.battery_stats['info'])
         self.refresh_battery_stats()
 
     def _init_window(self) -> None:
@@ -104,19 +104,28 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         style.theme_use('clam')  # 'clam' allows color customizations.
 
         # Button state styles.
-        btn_common = {'relief': 'flat',
-                      'foreground': self.theme['text'],
-                      'font': self.standard_font}
+        btn_common = {'relief': 'flat', 'font': self.standard_font}
 
-        _opts = {**btn_common, 'background': self.theme['btn_normal']}
+        _opts = {**btn_common,
+                 'background': self.theme['btn_normal'],
+                 'foreground': self.theme['text']}
         style.configure('Default.TButton', **_opts)
         style.map('Default.TButton',
                   background=[('active', self.theme['btn_active_normal'])])
 
-        _opts = {**btn_common, 'background': self.theme['btn_charge']}
+        _opts = {**btn_common,
+                 'background': self.theme['btn_charge'],
+                 'foreground': self.theme['text']}
         style.configure('Recharge.TButton', **_opts)
         style.map('Recharge.TButton',
                   background=[('active', self.theme['btn_active_charge'])])
+
+        _opts = {**btn_common,
+                 'foreground': self.theme['btn_discharge_fg'],
+                 'background': self.theme['btn_discharge']}
+        style.configure('Discharge.TButton', **_opts)
+        style.map('Discharge.TButton',
+                  background=[('active', self.theme['btn_active_discharge'])])
 
         # Label styles - Top Label.
         top_label_common = {'foreground': self.theme['text'],
@@ -199,12 +208,30 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
     def refresh_battery_stats(self) -> None:
         """Periodically refresh the battery statistics."""
         logger.debug("Refreshing battery statistics")
-        new_battery_stats = get_battery_stats(STATES[self.ui_state]['action'])
-        if self.battery_stats != new_battery_stats:
+        new_battery_stats = get_battery_stats()
+        current_battery_info = self.battery_stats['info']
+        new_battery_info = new_battery_stats['info']
+        # Handle updating button appearance on battery discharge.
+        self.update_button(new_battery_stats['discharging'])
+        # Update text widget info.
+        if current_battery_info != new_battery_info:
             self.battery_stats = new_battery_stats
-            self.write_stats(self.battery_stats)
+            self.write_stats(new_battery_info)
+
         # noinspection PyTypeChecker
         self._refresh_job = self.after(REFRESH_INTERVAL_MS, self.refresh_battery_stats)
+
+    def update_button(self, is_discharging: bool) -> None:
+        """Update button appearance to match battery status."""
+        prev_btn_style = self.button.cget("style")
+        if is_discharging:
+            new_style = 'Discharge.TButton'
+        elif self.ui_state is BatteryState.RECHARGE:
+            new_style = 'Recharge.TButton'
+        else:
+            new_style = 'Default.TButton'
+        if new_style != prev_btn_style:
+            self.button.configure(style=new_style)
 
     def quit_on_error(self, error_message: str, title: str = "Error") -> NoReturn:
         """Display Error dialog and quit."""
@@ -263,13 +290,13 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self.apply_state()
 
         # Update text widget.
-        next_battery_action = STATES[self.ui_state]['action']
-        self.battery_stats = get_battery_stats(next_battery_action)
-        self.write_stats(self.battery_stats)
+        self.battery_stats = get_battery_stats()
+        self.write_stats(self.battery_stats['info'])
         return
 
     def write_stats(self, stats: str) -> None:
         """Update the text area with the current TLP battery stats."""
+        stats = STATES[self.ui_state]['action'] + stats
         # Accessibility fallback: also echo stats to the terminal.
         logger.info(stats)
         # noinspection PyTypeChecker
