@@ -109,8 +109,10 @@ def tlp_toggle_state(_parent: App, current_state: BatteryState) -> bool:
 def tlp_get_stats() -> str:
     """Retrieve TLP battery statistics.
 
-    Runs `sudo tlp-stat -b` and returns stdout. Returns an error message string
-    if the command fails.
+    Runs `sudo tlp-stat -b` and returns stdout.
+
+    Raises:
+        TlpCommandError: Exception if the command fails.
     """
     try:
         result = subprocess.run(['sudo', 'tlp-stat', '-b'],
