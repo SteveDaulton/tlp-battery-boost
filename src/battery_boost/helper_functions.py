@@ -25,6 +25,9 @@ def command_on_path(command: str) -> bool:
 def get_battery_stats() -> BatteryInfo:
     """Retrieve raw statistics from battery.
 
+    Failure of `tlp_get_stats()` may be non-fatal, so we just return
+    the message for display and let the user decide what to do.
+
     Returns:
         BatteryInfo: discharge status, and battery statistics or
         an error message.
