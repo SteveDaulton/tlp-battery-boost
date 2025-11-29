@@ -81,6 +81,9 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         self._init_widgets()
         self._layout_widgets()
 
+        # Bind Ctrl+Q keyboard shortcut
+        self.bind('<Control-KeyPress-q>', lambda e: self.quit_app())
+
         # Show main window.
         self.deiconify()
 
