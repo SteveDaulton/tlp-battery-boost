@@ -55,6 +55,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
             scale_factor: Scale factor for UI sizing.
         """
         super().__init__()
+        self._refresh_job: str | None = None
 
         self.theme = theme
         self.standard_font = standard_font
@@ -71,7 +72,6 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
             pass
 
         # Acquire root for commands.
-        self._refresh_job: str | None = None
         authenticate(self)
 
         self.ui_state: BatteryState = BatteryState.DEFAULT
@@ -197,12 +197,15 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                 return True
         except RuntimeError as exc:
             self.quit_on_error(str(exc), "Unsupported system")
-        messagebox.showwarning(
+        user_response = messagebox.showwarning(
             "AC Power Required",
             "Full charge mode requires AC power.\n"
             "Plug in your laptop and try again.",
-            parent=self
+            parent=self,
+            type='okcancel'
         )
+        if user_response == 'cancel':
+            self.quit_app("AC power not connected.")
         return False  # Non-fatal failure
 
     def refresh_battery_stats(self) -> None:
