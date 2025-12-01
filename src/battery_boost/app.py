@@ -200,14 +200,14 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                 return True
         except RuntimeError as exc:
             self.quit_on_error(str(exc), "Unsupported system")
-        user_response = messagebox.showwarning(
+        retry = messagebox.askretrycancel(
             "AC Power Required",
             "Full charge mode requires AC power.\n"
             "Plug in your laptop and try again.",
             parent=self,
-            type='okcancel'
+            icon='warning'
         )
-        if user_response == 'cancel':
+        if not retry:  # Cancel button pressed.
             self.quit_app("AC power not connected.")
         return False  # Non-fatal failure
 
