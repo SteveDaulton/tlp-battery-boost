@@ -303,8 +303,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
     def write_stats(self, stats: str) -> None:
         """Update the text area with the current TLP battery stats."""
         stats = STATES[self.ui_state]['action'] + stats
-        # Accessibility fallback: also echo stats to the terminal.
-        logger.info(stats)
+        logger.debug(stats)
         # noinspection PyTypeChecker
         self.text_box.config(state=tk.NORMAL)
         self.text_box.delete('1.0', tk.END)

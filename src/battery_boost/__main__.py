@@ -16,7 +16,7 @@ from battery_boost.shell_commands import revoke_permissions
 
 def main() -> None:
     """Configure and launch app."""
-    debug_level = logging.DEBUG if DEBUG else logging.INFO
+    debug_level = logging.DEBUG if DEBUG else logging.WARNING
     logging.basicConfig(
         level=debug_level,
         format="%(levelname)s: %(name)s %(message)s",
