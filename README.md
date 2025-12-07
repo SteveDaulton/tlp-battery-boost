@@ -8,22 +8,23 @@
   <img src="https://raw.githubusercontent.com/SteveDaulton/tlp-battery-boost/main/BatteryBoost.png" alt="Battery Boost Screenshot">
 </p>
 
-_A lightweight Tkinter GUI to toggle TLP between normal battery optimisation mode and temporary full-charge mode
-( tlp fullcharge )._
+_A lightweight Tkinter GUI to toggle TLP’s battery-care charging thresholds, allowing quick switching between
+configured battery-health limits and a temporary full-charge override (`tlp fullcharge`)._
 
 ## Overview
 
-Battery Boost provides an easy-to-use interface for switching between normal and full-charge
-battery profiles using [TLP](https://linrunner.de/tlp/).
-It is designed for users who want to extend their battery lifespan by maintaining optimal charge
-during everyday use, while still having convenient access to full charging when needed.
+**TLP Battery Boost** simplifies [TLP's](https://linrunner.de/tlp/) battery-care workflow. It is particularly
+convenient for users who prefer to preserve battery health but occasionally need a full charge.
 
-Note that full-charge mode requires AC power. If you attempt to enable it while on battery, the app will warn you.
+It provides a simple GUI to:
 
+- View the laptop’s battery thresholds and charge status.
+- Temporarily override charge thresholds using Full Charge (`tlp fullcharge`).
+- Revert to normal battery-care behaviour with a single click.
 
 ## Features
 
-- **Toggle Between Profiles:** Switch between default TLP settings and full-charge mode.
+- **Toggle Charging Behaviour:** Switch between configured battery-care thresholds and full-charge override.
 - **Automatic Authentication:** Enter your password once - the app maintains sudo privileges while running.
 - **Battery Status Display:** View current charge levels and threshold settings.
 - **Theme Support:** Choose between light and dark themes.
@@ -86,7 +87,7 @@ When launched the app will:
 - Prompt for your sudo password.
 - Initialise TLP to default settings.
 - Show the current battery status.
-- Provide a button to toggle between default and full-charge modes.
+- Provide a button to toggle between battery-care thresholds and full-charge override.
 
 
 ## Command Line Options
@@ -138,10 +139,15 @@ battery_boost --font-size 1
 
 ## How It Works
 
-- **Default Mode:** Uses TLP's standard battery preservation settings (typically 80% charge limit).
+- **Battery-Care Mode:** Uses TLP’s configured battery-preservation charge thresholds. For example: 
+  - **Start threshold** = 70%: The laptop will only start charging when the battery is below 70%.
+  - **End threshold** = 80%: The laptop will stop charging when the battery reaches the 80% limit.
 - **Full Charge Mode:** Temporarily disables charge limits to charge the battery to 100%.
 - **Authentication:** Caches sudo credentials to avoid repeated password prompts.
 - **Status Monitoring:** Uses `tlp-stat -b` to display current battery thresholds and charge levels.
+
+**Note:** After the battery is fully charged, or the laptop is rebooted, TLP returns to its normal
+threshold-controlled behaviour.
 
 > For more information about TLP, see [https://linrunner.de/tlp/](https://linrunner.de/tlp/).
 
