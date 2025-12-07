@@ -146,8 +146,7 @@ battery_boost --font-size 1
 - **Authentication:** Caches sudo credentials to avoid repeated password prompts.
 - **Status Monitoring:** Uses `tlp-stat -b` to display current battery thresholds and charge levels.
 
-**Note:** After the battery is fully charged, or the laptop is rebooted, TLP returns to its normal
-threshold-controlled behaviour.
+**Note:** After the laptop is rebooted, TLP returns to its normal threshold-controlled behaviour.
 
 > For more information about TLP, see [https://linrunner.de/tlp/](https://linrunner.de/tlp/).
 
