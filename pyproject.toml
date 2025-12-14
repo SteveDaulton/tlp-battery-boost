@@ -38,6 +38,7 @@ battery_boost = "battery_boost.__main__:main"
 packages = [
     { include = "battery_boost", from = "src" }
 ]
+include = ["src/battery_boost/icons/tlp-battery-boost.png"]
 
 [dependency-groups]
 dev = [
@@ -46,6 +47,8 @@ dev = [
     "mypy>=1.18.2",
     "twine >=6.2.0",
     "mkdocs >=1.6.1",
+    "mkdocstrings >=1.0.0",
+    "mkdocstrings-python >=2.0.0",
 ]
 
 [build-system]

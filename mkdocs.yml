@@ -1,0 +1,47 @@
+site_name: TLP Battery Boost
+site_description: A lightweight Tkinter GUI to toggle TLP between normal and full-charge modes.
+repo_url: https://github.com/SteveDaulton/tlp-battery-boost
+
+theme:
+  name: mkdocs
+  # name: readthedocs
+  color_mode: auto
+  user_color_mode_toggle: true
+  nav_style: dark
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - Troubleshooting: troubleshooting.md
+  - Appendix:
+      - API Reference: appendix-api.md
+      - __main__.py: api/__main__.md
+      - app.py: api/app.md
+      - authenticate.py: api/authenticate.md
+      - consants.py: api/constants.md
+      - helper_functions.py: api/helper_functions.md
+      - shell_commands.py: api/shell_commands.md
+      - tlp_parser.py: api/tlp_parser.md
+
+extra_css:
+  - style.css
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_root_toc_entry: false
+            show_source: true
+            show_signature: false
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - tables
+  - codehilite
+  - fenced_code

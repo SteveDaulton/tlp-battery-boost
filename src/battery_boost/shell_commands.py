@@ -72,7 +72,7 @@ def tlp_toggle_state(_parent: App, current_state: BatteryState) -> bool:
     """Toggle TLP between default and full-charge profiles.
 
     Args:
-        _parent: The Tkinter app instance, used for error dialogs.
+        _parent: The Tkinter api instance, used for error dialogs.
         current_state: The current battery profile.
     Returns:
         True if successful, False otherwise.

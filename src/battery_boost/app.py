@@ -156,7 +156,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                                  style='Default.TButton',
                                  command=self.toggle_state)
         instructions = ("AC power must be connected.\n\n"
-                        "You can close this app after\n"
+                        "You can close this api after\n"
                         "selecting the required profile.")
         self.instruction_label = ttk.Label(self,
                                            style='DefaultInstruction.TLabel',
@@ -194,7 +194,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                                "Fatal Error")
 
     def is_on_ac_power(self) -> bool:
-        """Check if app is on AC power."""
+        """Check if api is on AC power."""
         try:
             if on_ac_power():
                 return True

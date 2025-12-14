@@ -15,7 +15,22 @@ from battery_boost.shell_commands import revoke_permissions
 
 
 def main() -> None:
-    """Configure and launch app."""
+    """Entry point of the TLP Battery Boost application.
+
+    - Configures the logging level based on the `DEBUG` constant.
+    - Parses command-line arguments to determine the GUI theme and font settings.
+    - Instantiates the main `App` class with the chosen theme and fonts.
+    - Starts the Tkinter main event loop.
+    - Handles user interrupts and ensures clean shutdown.
+    - Revokes any elevated permissions acquired during execution.
+
+    Exceptions:
+        KeyboardInterrupt: Gracefully exits if the user sends an interrupt
+            signal (e.g., Ctrl+C). The GUI is destroyed if it was created.
+        Exception: Any unhandled exception during app initialization or
+            execution is logged as critical and causes the program to exit
+            with a non-zero status.
+    """
     debug_level = logging.DEBUG if DEBUG else logging.WARNING
     logging.basicConfig(
         level=debug_level,
