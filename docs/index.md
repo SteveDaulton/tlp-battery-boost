@@ -1,14 +1,21 @@
 # TLP Battery Boost
 
+---
+
 **TLP Battery Boost** is a lightweight Tkinter-based GUI for Linux laptops that optimise
 battery longevity with [TLP](https://linrunner.de/tlp/index.html).
 It is particularly useful for users who typically preserve battery health via configured
 charging thresholds but occasionally require a full charge.
 
+
+![BatteryBoost screenshot](images/BatteryBoost.png)
+
 TLP Battery Boost provides a simple interface for switching between:
 
 - **Balanced Charging:** TLP threshold-controlled charging behaviour.
 - **Full-Charge Boost:** Temporary override to charge thresholds.
+
+---
 
 ## How it works:
 
@@ -40,12 +47,6 @@ For further details, refer to the [TLP documentation](https://linrunner.de/tlp/f
 
 Authentication is handled entirely by `sudo`; passwords are not stored, logged, or transmitted.
 Elevated privileges are cleared on exit.
-
----
-
-## Screenshot
-
-![BatteryBoost screenshot](images/BatteryBoost.png)
 
 ---
 
