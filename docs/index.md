@@ -1,4 +1,5 @@
 # TLP Battery Boost
+Version {{ app_version }}
 
 ---
 

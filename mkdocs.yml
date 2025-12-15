@@ -37,6 +37,7 @@ plugins:
             show_root_toc_entry: false
             show_source: true
             show_signature: false
+  - macros
 
 markdown_extensions:
   - toc:
