@@ -11,6 +11,12 @@
 _A lightweight Tkinter GUI to toggle TLP’s battery-care charging thresholds, allowing quick switching between
 configured battery-health limits and a temporary full-charge override (`tlp fullcharge`)._
 
+### User manual:
+
+The user manual is available online at
+[https://stevedaulton.github.io/tlp-battery-boost/](https://stevedaulton.github.io/tlp-battery-boost/)
+
+
 ## Overview
 
 **TLP Battery Boost** simplifies [TLP's](https://linrunner.de/tlp/) battery-care workflow. It is particularly
