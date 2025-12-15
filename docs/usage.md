@@ -28,6 +28,9 @@ If you cancel the password dialog, the application quits.
 
 ## Main Interface
 
+
+![BatteryBoost screenshot](images/battery-boost-gui.png)
+
 When launched, the application displays:
 
 - **Current TLP state** which is initially the default profile.
