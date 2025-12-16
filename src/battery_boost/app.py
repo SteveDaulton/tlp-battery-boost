@@ -156,7 +156,7 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                                  style='Default.TButton',
                                  command=self.toggle_state)
         instructions = ("AC power must be connected.\n\n"
-                        "You can close this api after\n"
+                        "You can close this app after\n"
                         "selecting the required profile.")
         self.instruction_label = ttk.Label(self,
                                            style='DefaultInstruction.TLabel',
