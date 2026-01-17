@@ -190,7 +190,9 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
                                "Fatal Error")
 
     def ensure_ac_power(self) -> bool:
-        """Check if api is on AC power.
+        """Ensure AC power is connected.
+
+        Boolean return allows reprompting on startup, or single check at runtime.
 
         Returns:
         True if AC power is confirmed, else False.
