@@ -3,7 +3,6 @@
 Provides a simple interface to toggle between normal and full-charge modes,
 refresh sudo authentication, and display battery statistics.
 """
-import logging
 import sys
 import tkinter as tk
 from tkinter import ttk
@@ -29,9 +28,6 @@ from battery_boost.shell_commands import (
     tlp_active,
     tlp_running
 )
-
-
-logger = logging.getLogger(__name__)
 
 
 class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
@@ -67,8 +63,8 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         # Fail early if TLP not available.
         self._verify_tlp_ready()
 
-        # Ensure AC power connected.
-        while not self.is_on_ac_power():
+        while not self.ensure_ac_power():
+            # Keep checking until either we have AC power, or we exit.
             pass
 
         # Acquire root for commands.
@@ -193,8 +189,12 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
             self.quit_on_error("TLP service is not active.",
                                "Fatal Error")
 
-    def is_on_ac_power(self) -> bool:
-        """Check if api is on AC power."""
+    def ensure_ac_power(self) -> bool:
+        """Check if api is on AC power.
+
+        Returns:
+        True if AC power is confirmed, else False.
+        """
         try:
             if on_ac_power():
                 return True
@@ -213,7 +213,6 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
 
     def refresh_battery_stats(self) -> None:
         """Periodically refresh the battery statistics."""
-        logger.debug("Refreshing battery statistics")
         new_battery_stats = get_battery_stats()
         current_battery_info = self.battery_stats['info']
         new_battery_info = new_battery_stats['info']
@@ -253,8 +252,8 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
         if self._refresh_job:
             try:
                 self.after_cancel(self._refresh_job)
-            except (tk.TclError, RuntimeError) as exc:
-                logger.critical("quit_app failed to cancel job %s", exc)
+            except (tk.TclError, RuntimeError):
+                pass  # Just quit
         self.destroy()
         sys.exit(status)
 
@@ -303,7 +302,6 @@ class App(tk.Tk):  # pylint: disable=too-many-instance-attributes
     def write_stats(self, stats: str) -> None:
         """Update the text area with the current TLP battery stats."""
         stats = STATES[self.ui_state]['action'] + stats
-        logger.debug(stats)
         # noinspection PyTypeChecker
         self.text_box.config(state=tk.NORMAL)
         self.text_box.delete('1.0', tk.END)

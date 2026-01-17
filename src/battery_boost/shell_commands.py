@@ -92,8 +92,8 @@ def tlp_toggle_state(_parent: App, current_state: BatteryState) -> bool:
         _parent.quit_on_error(f"Command not found: {exc.filename}",
                               "TLP Command Error")
     except subprocess.CalledProcessError as exc:
-        # Special case:fullcharge requires AC power.
-        if not _parent.is_on_ac_power():
+        # Special case: fullcharge requires AC power.
+        if not _parent.ensure_ac_power():
             return False  # Non-fatal failure
 
         _parent.quit_on_error(f"TLP command failed: {exc.returncode}:\n"
