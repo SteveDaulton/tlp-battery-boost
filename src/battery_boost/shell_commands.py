@@ -146,8 +146,8 @@ def tlp_running() -> bool:
 
 def revoke_permissions() -> None:
     """Revoke cached sudo credentials."""
-    try:
-        subprocess.run(['sudo', '--remove-timestamp'], check=False)
-    except Exception:  # pylint: disable=broad-exception-caught
-        # Don't raise. App is shutting down.
-        pass
+    subprocess.run(
+        ['sudo', '--remove-timestamp'],
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL)
