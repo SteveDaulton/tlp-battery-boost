@@ -129,7 +129,7 @@ class BatteryState(Enum):
 
 class UIState(TypedDict):
     """Labels and actions for the battery state displayed in the GUI."""
-    action: str
+    action_text: str
     label_text: str
     button_text: str
 
@@ -140,12 +140,12 @@ STATES: dict[BatteryState, UIState]
 
 _STATES: dict[BatteryState, UIState] = {
     BatteryState.DEFAULT: {
-        'action': "TLP reset to current defaults.\n",
+        'action_text': "TLP reset to current defaults.\n",
         'label_text': "Default TLP profile",
         'button_text': "Click to Recharge"
         },
     BatteryState.RECHARGE: {
-        'action': "Charging to full capacity.\n",
+        'action_text': "Charging to full capacity.\n",
         'label_text': "Full Recharge Enabled",
         'button_text': "Switch to Default"
         }
